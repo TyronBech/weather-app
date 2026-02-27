@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react';
-import { fetchWeather } from '@/Services/weatherService';
+import { fetchWeather } from '@/services/weatherService';
 import { WeatherResponse } from '../types/weather';
 
 export function useWeather(latitude: number, longitude: number) {
