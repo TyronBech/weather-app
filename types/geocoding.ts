@@ -12,5 +12,5 @@ export interface GeocodingResult {
 }
 
 export interface GeocodingResponse {
-  results: GeocodingResult[];
+  results?: GeocodingResult[];
 }
