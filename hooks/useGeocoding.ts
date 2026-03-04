@@ -2,6 +2,10 @@ import { useState } from 'react';
 import { searchLocation } from '@/services/geocodingService';
 import { GeocodingResult } from '@/types/geocoding';
 
+/**
+ * Custom hook to manage geocoding functionality, including searching for locations and handling the results.
+ * @returns An object containing the search results, loading state, error message, and a function to perform the search.
+ */
 export function useGeocoding() {
   const [results, setResults] = useState<GeocodingResult[]>([]);
   const [loading, setLoading] = useState(false);

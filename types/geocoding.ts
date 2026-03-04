@@ -1,3 +1,4 @@
+// This file defines TypeScript interfaces for the geocoding results returned by the Open-Meteo Geocoding API.
 export interface GeocodingResult {
   id: number;
   name: string;
