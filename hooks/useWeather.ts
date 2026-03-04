@@ -15,9 +15,12 @@ export function useWeather(latitude: number, longitude: number) {
 
   useEffect(() => {
     setLoading(true);
+    setError(null);
     fetchWeather(latitude, longitude)
       .then(setData)
-      .catch((err) => setError(err.message))
+      .catch((err) =>
+        setError(err instanceof Error ? err.message : String(err))
+      )
       .finally(() => setLoading(false));
   }, [latitude, longitude]);
 
