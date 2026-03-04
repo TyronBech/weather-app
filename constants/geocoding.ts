@@ -1,0 +1,2 @@
+// This file defines constants related to the geocoding functionality, including the base URL for the Open-Meteo Geocoding API.
+export const GEOCODING_BASE_URL = 'https://geocoding-api.open-meteo.com/v1/search';
