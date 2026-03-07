@@ -1,7 +1,7 @@
 {
   "expo": {
-    "name": "weather-app",
-    "slug": "weather-app",
+    "name": "SkyCast",
+    "slug": "skycast",
     "version": "1.0.0",
     "orientation": "portrait",
     "icon": "./assets/images/icon.png",
@@ -21,7 +21,7 @@
     },
     "web": {
       "output": "static",
-      "favicon": "./assets/svg/google/v4/isolated_scattered_thunderstorms_day.svg"
+      "favicon": "./assets/images/favicon.png"
     },
     "androidStatusBar": {
       "barStyle": "dark-content",
