@@ -1,10 +1,10 @@
 {
   "expo": {
-    "name": "weather-app",
-    "slug": "weather-app",
+    "name": "SkyCast",
+    "slug": "SkyCast",
     "version": "1.0.0",
     "orientation": "portrait",
-    "icon": "./assets/svg/google/v4/isolated_scattered_thunderstorms_day.svg",
+    "icon": "./assets/images/icon.png",
     "scheme": "weatherapp",
     "userInterfaceStyle": "automatic",
     "ios": {
@@ -21,7 +21,7 @@
     },
     "web": {
       "output": "static",
-      "favicon": "./assets/svg/google/v4/isolated_scattered_thunderstorms_day.svg"
+      "favicon": "./assets/images/favicon.png"
     },
     "androidStatusBar": {
       "barStyle": "dark-content",
@@ -33,7 +33,7 @@
       [
         "expo-splash-screen",
         {
-          "image": "./assets/svg/google/v4/very_hot.svg",
+          "image": "./assets/images/splash-icon.png",
           "imageWidth": 200,
           "resizeMode": "contain",
           "backgroundColor": "#ffffff",
