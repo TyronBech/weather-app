@@ -2,7 +2,7 @@ import { WEATHER_CODES } from "@/constants/weatherCodes";
 import { WeatherCardProps } from "@/types/weatherTypes";
 import { BlurView } from "expo-blur";
 import React from "react";
-import { Text, View, ViewStyle } from "react-native";
+import { Platform, Text, View } from "react-native";
 
 function resolveWeatherIcon(
   iconModule: WeatherCardProps["weatherCode"] extends number ? any : never,
@@ -44,7 +44,7 @@ export default function WeatherCard({
         {/* Glow blob */}
         <View
           className="absolute -top-10 -right-10 w-28 h-28 rounded-full bg-white/5"
-          style={{ filter: "blur(20px)" } as ViewStyle}
+          style={Platform.OS === "web" ? ({ filter: "blur(20px)" } as object) : undefined}
         />
 
         <View className="relative z-10 p-6">
@@ -52,10 +52,10 @@ export default function WeatherCard({
           <View className="flex-row justify-between items-start">
             <View>
               <Text className="text-xs font-semibold text-white/60 tracking-widest uppercase">
-                {country}
+                {country ?? ""}
               </Text>
               <Text className="text-2xl font-bold text-white mt-0.5 tracking-tight">
-                {city}
+                {city ?? ""}
               </Text>
             </View>
 
@@ -72,7 +72,7 @@ export default function WeatherCard({
           </View>
 
           <Text className="text-sm text-white/55 mt-1">
-            {weather.label} · Feels like {feelsLike}°C
+            {weather.label}{feelsLike != null ? ` · Feels like ${feelsLike}°C` : ""}
           </Text>
 
           {/* Stats row */}
@@ -91,7 +91,7 @@ export default function WeatherCard({
                 🌬️ Wind
               </Text>
               <Text className="text-base font-semibold text-white mt-1">
-                {windSpeed} km/h
+                {windSpeed != null ? `${windSpeed} km/h` : "—"}
               </Text>
             </View>
           </View>

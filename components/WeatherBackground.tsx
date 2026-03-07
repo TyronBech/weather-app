@@ -54,7 +54,7 @@ export default function WeatherBackground({
       rangeY: number,
       duration: number,
     ) => {
-      Animated.loop(
+      return Animated.loop(
         Animated.sequence([
           Animated.parallel([
             Animated.timing(animX, {
@@ -93,11 +93,18 @@ export default function WeatherBackground({
             }),
           ]),
         ]),
-      ).start();
+      );
     };
 
-    floatBlob(blob1X, blob1Y, 30, 20, 6000);
-    floatBlob(blob2X, blob2Y, -25, 30, 8000);
+    const loop1 = floatBlob(blob1X, blob1Y, 30, 20, 6000);
+    const loop2 = floatBlob(blob2X, blob2Y, -25, 30, 8000);
+    loop1.start();
+    loop2.start();
+
+    return () => {
+      loop1.stop();
+      loop2.stop();
+    };
   }, [blob1X, blob1Y, blob2X, blob2Y]);
 
   return (

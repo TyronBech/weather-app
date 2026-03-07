@@ -21,14 +21,25 @@ export function useWeather(latitude: number | null, longitude: number | null) {
       return;
     }
 
+    let didCancel = false;
+
     setLoading(true);
     setError(null);
     fetchWeather(latitude, longitude)
-      .then(setData)
-      .catch((err) =>
-        setError(err instanceof Error ? err.message : String(err)),
-      )
-      .finally(() => setLoading(false));
+      .then((result) => {
+        if (!didCancel) setData(result);
+      })
+      .catch((err) => {
+        if (!didCancel)
+          setError(err instanceof Error ? err.message : String(err));
+      })
+      .finally(() => {
+        if (!didCancel) setLoading(false);
+      });
+
+    return () => {
+      didCancel = true;
+    };
   }, [latitude, longitude]);
 
   return { data, loading, error };
