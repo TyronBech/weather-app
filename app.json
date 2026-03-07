@@ -4,7 +4,7 @@
     "slug": "weather-app",
     "version": "1.0.0",
     "orientation": "portrait",
-    "icon": "./assets/images/icon.png",
+    "icon": "./assets/svg/google/v4/isolated_scattered_thunderstorms_day.svg",
     "scheme": "weatherapp",
     "userInterfaceStyle": "automatic",
     "ios": {
@@ -33,7 +33,7 @@
       [
         "expo-splash-screen",
         {
-          "image": "./assets/images/splash-icon.png",
+          "image": "./assets/svg/google/v4/very_hot.svg",
           "imageWidth": 200,
           "resizeMode": "contain",
           "backgroundColor": "#ffffff",
