@@ -1,11 +1,388 @@
-import { Text, View } from "react-native";
+import WeatherBackground from "@/components/WeatherBackground";
+import WeatherCard from "@/components/WeatherCard";
+import DetailCard from "@/components/DetailCard";
+import { useGeocoding } from "@/hooks/useGeocoding";
+import { useLocation } from "@/hooks/useLocation";
+import { useWeather } from "@/hooks/useWeather";
+import { GeocodingResult } from "@/types/geocoding";
+import { Ionicons, MaterialCommunityIcons } from "@expo/vector-icons";
+import { BlurView } from "expo-blur";
+import { StatusBar } from "expo-status-bar";
+import { useEffect, useMemo, useState } from "react";
+import {
+  ActivityIndicator,
+  Pressable,
+  ScrollView,
+  Text,
+  TextInput,
+  View,
+} from "react-native";
+import { useSafeAreaInsets } from "react-native-safe-area-context";
+
+function formatHourLabel(value: string) {
+  const date = new Date(value);
+  return date.toLocaleTimeString([], { hour: "numeric" });
+}
 
 export default function Index() {
+  const insets = useSafeAreaInsets();
+  const [searchQuery, setSearchQuery] = useState("");
+  const [selectedLocation, setSelectedLocation] =
+    useState<GeocodingResult | null>(null);
+  const {
+    coordinates,
+    locationDetails,
+    loading: locationLoading,
+    error: locationError,
+  } = useLocation();
+  const { results, error: geocodingError, search } = useGeocoding();
+  const activeCoordinates = selectedLocation
+    ? {
+        latitude: selectedLocation.latitude,
+        longitude: selectedLocation.longitude,
+      }
+    : coordinates;
+  const {
+    data,
+    loading: weatherLoading,
+    error: weatherError,
+  } = useWeather(
+    activeCoordinates?.latitude ?? null,
+    activeCoordinates?.longitude ?? null,
+  );
+
+  useEffect(() => {
+    const trimmedQuery = searchQuery.trim();
+
+    if (trimmedQuery.length < 2) {
+      return;
+    }
+
+    const timeoutId = setTimeout(() => {
+      search(trimmedQuery);
+    }, 350);
+
+    return () => clearTimeout(timeoutId);
+  }, [search, searchQuery]);
+
+  const activeCity =
+    selectedLocation?.name ??
+    locationDetails?.city ??
+    locationDetails?.region ??
+    "Current location";
+  const activeCountry =
+    selectedLocation?.country ?? locationDetails?.country ?? "Live";
+
+  const shouldShowResults =
+    searchQuery.trim().length >= 2 && results.length > 0;
+
+  const hourlyForecast = useMemo(() => {
+    if (!data) {
+      return [];
+    }
+
+    const startIndex = Math.max(
+      data.hourly.time.findIndex((value) => value >= data.current.time),
+      0,
+    );
+
+    return data.hourly.time
+      .slice(startIndex, startIndex + 24)
+      .map((time, index) => ({
+        time,
+        temperature: Math.round(
+          data.hourly.temperature_2m[startIndex + index] ?? 0,
+        ),
+        weatherCode:
+          data.hourly.weather_code[startIndex + index] ??
+          data.current.weather_code,
+        humidity:
+          data.hourly.relative_humidity_2m[startIndex + index] ??
+          data.current.relative_humidity_2m,
+        rainChance:
+          data.hourly.precipitation_probability[startIndex + index] ?? 0,
+      }));
+  }, [data]);
+
+  const todayTemperatures = useMemo(() => {
+    if (!data) {
+      return { min: 0, max: 0 };
+    }
+
+    const upcomingTemps = data.hourly.temperature_2m.slice(0, 24);
+    return {
+      min: Math.round(Math.min(...upcomingTemps)),
+      max: Math.round(Math.max(...upcomingTemps)),
+    };
+  }, [data]);
+
+  const currentRainChance = hourlyForecast[0]?.rainChance ?? 0;
+  const backgroundWeatherCode = data?.current.weather_code ?? 0;
+  const backgroundIsDay = data?.current.is_day ?? 1;
+  const currentWeather = data?.current ?? null;
+  const hasWeather = Boolean(data);
+  const isInitialLoading = locationLoading || weatherLoading;
+
+  function handleLocationSelect(result: GeocodingResult) {
+    setSelectedLocation(result);
+    setSearchQuery(`${result.name}, ${result.country}`);
+  }
+
   return (
-    <View className="flex-1 items-center justify-center bg-orange-500">
-      <Text className="text-lg font-semibold text-gray-800">
-        Edit app/index.tsx to edit this screen.
-      </Text>
+    <View className="flex-1" style={{ paddingTop: insets.top }}>
+      <StatusBar style="auto" translucent={true} />
+      <WeatherBackground
+        weatherCode={backgroundWeatherCode}
+        isDay={backgroundIsDay}
+      >
+        <ScrollView
+          className="flex-1"
+          contentContainerStyle={{ paddingHorizontal: 20, paddingBottom: 40 }}
+          showsVerticalScrollIndicator={false}
+        >
+          <View className="gap-6 pt-4">
+            <View className="gap-4">
+              <View className="flex-row items-center justify-between">
+                <View className="flex-row items-center gap-3">
+                  <View className="h-14 w-14 items-center justify-center rounded-[20px] bg-white/15">
+                    <MaterialCommunityIcons
+                      name="weather-partly-cloudy"
+                      size={28}
+                      color="white"
+                    />
+                  </View>
+                  <View>
+                    <Text className="text-[12px] uppercase tracking-[2.5px] text-white/65">
+                      Forecast
+                    </Text>
+                    <Text className="text-3xl font-black text-white">
+                      SkyCast
+                    </Text>
+                  </View>
+                </View>
+
+                <BlurView
+                  intensity={24}
+                  tint="light"
+                  className="overflow-hidden rounded-full border border-white/15"
+                >
+                  <View className="px-4 py-3">
+                    <Text className="text-xs font-semibold uppercase tracking-[2px] text-white/70">
+                      {activeCountry}
+                    </Text>
+                  </View>
+                </BlurView>
+              </View>
+
+              <BlurView
+                intensity={30}
+                tint="light"
+                className="overflow-hidden rounded-[28px] border border-white/15"
+              >
+                <View className="flex-row items-center gap-3 px-4 py-4">
+                  <Ionicons
+                    name="search"
+                    size={20}
+                    color="rgba(255,255,255,0.75)"
+                  />
+                  <TextInput
+                    value={searchQuery}
+                    onChangeText={setSearchQuery}
+                    placeholder="Search for a location"
+                    placeholderTextColor="rgba(255,255,255,0.55)"
+                    className="flex-1 text-base font-medium text-white"
+                    autoCapitalize="words"
+                    autoCorrect={false}
+                  />
+                </View>
+              </BlurView>
+
+              {shouldShowResults ? (
+                <BlurView
+                  intensity={30}
+                  tint="light"
+                  className="overflow-hidden rounded-[28px] border border-white/15"
+                >
+                  <View className="divide-y divide-white/10">
+                    {results.map((result) => {
+                      const locationLabel = [
+                        result.name,
+                        result.admin1,
+                        result.country,
+                      ]
+                        .filter(Boolean)
+                        .join(", ");
+
+                      return (
+                        <Pressable
+                          key={result.id}
+                          onPress={() => handleLocationSelect(result)}
+                          className="px-4 py-4 active:bg-white/10"
+                        >
+                          <Text className="text-base font-semibold text-white">
+                            {result.name}
+                          </Text>
+                          <Text className="mt-1 text-sm text-white/65">
+                            {locationLabel}
+                          </Text>
+                        </Pressable>
+                      );
+                    })}
+                  </View>
+                </BlurView>
+              ) : null}
+            </View>
+
+            {hasWeather && currentWeather ? (
+              <>
+                <View className="gap-4">
+                  <View className="flex-row items-center justify-between">
+                    <View>
+                      <Text className="text-[12px] uppercase tracking-[2px] text-white/60">
+                        Right now
+                      </Text>
+                      <Text className="mt-1 text-xl font-semibold text-white">
+                        {activeCity}
+                      </Text>
+                    </View>
+                    <Text className="text-sm text-white/65">
+                      {data?.timezone}
+                    </Text>
+                  </View>
+
+                  <WeatherCard
+                    city={activeCity}
+                    country={activeCountry}
+                    temperature={Math.round(currentWeather.temperature_2m)}
+                    feelsLike={Math.round(currentWeather.apparent_temperature)}
+                    weatherCode={currentWeather.weather_code}
+                    isDay={currentWeather.is_day}
+                    humidity={Math.round(currentWeather.relative_humidity_2m)}
+                    windSpeed={Math.round(currentWeather.wind_speed_10m)}
+                  />
+                </View>
+
+                <View className="gap-4">
+                  <View className="flex-row items-center justify-between">
+                    <Text className="text-xl font-semibold text-white">
+                      Hourly outlook
+                    </Text>
+                    <Text className="text-sm text-white/60">Next 24 hours</Text>
+                  </View>
+
+                  <ScrollView
+                    horizontal
+                    showsHorizontalScrollIndicator={false}
+                    contentContainerStyle={{ paddingRight: 20 }}
+                  >
+                    <View className="flex-row gap-3">
+                      {hourlyForecast.map((entry) => (
+                        <WeatherCard
+                          key={entry.time}
+                          size="hourly"
+                          temperature={entry.temperature}
+                          weatherCode={entry.weatherCode}
+                          humidity={entry.humidity}
+                          isDay={currentWeather.is_day}
+                          time={formatHourLabel(entry.time)}
+                        />
+                      ))}
+                    </View>
+                  </ScrollView>
+                </View>
+
+                <View className="gap-4">
+                  <View className="flex-row items-center justify-between">
+                    <Text className="text-xl font-semibold text-white">
+                      More details
+                    </Text>
+                    <Text className="text-sm text-white/60">
+                      Live conditions
+                    </Text>
+                  </View>
+
+                  <View className="flex-row flex-wrap justify-between gap-y-4">
+                    <DetailCard
+                      icon="water-percent"
+                      label="Humidity"
+                      value={`${Math.round(currentWeather.relative_humidity_2m)}%`}
+                    />
+                    <DetailCard
+                      icon="weather-windy"
+                      label="Wind speed"
+                      value={`${Math.round(currentWeather.wind_speed_10m)} km/h`}
+                    />
+                    <DetailCard
+                      icon="weather-rainy"
+                      label="Rain chance"
+                      value={`${Math.round(currentRainChance)}%`}
+                    />
+                    <DetailCard
+                      icon="gauge"
+                      label="Pressure"
+                      value={`${Math.round(currentWeather.surface_pressure)} hPa`}
+                    />
+                    <DetailCard
+                      icon="thermometer-lines"
+                      label="Today range"
+                      value={`${todayTemperatures.max}° / ${todayTemperatures.min}°`}
+                    />
+                    <DetailCard
+                      icon="crosshairs-gps"
+                      label="Coordinates"
+                      value={`${activeCoordinates?.latitude.toFixed(2)}, ${activeCoordinates?.longitude.toFixed(2)}`}
+                    />
+                  </View>
+                </View>
+              </>
+            ) : null}
+
+            {isInitialLoading && !hasWeather ? (
+              <BlurView
+                intensity={26}
+                tint="light"
+                className="overflow-hidden rounded-[28px] border border-white/15"
+              >
+                <View className="flex-row items-center gap-3 px-5 py-6">
+                  <ActivityIndicator color="white" />
+                  <Text className="text-base text-white/80">
+                    Loading the latest weather...
+                  </Text>
+                </View>
+              </BlurView>
+            ) : null}
+
+            {locationError || weatherError || geocodingError ? (
+              <BlurView
+                intensity={26}
+                tint="light"
+                className="overflow-hidden rounded-[28px] border border-rose-200/25"
+              >
+                <View className="gap-2 px-5 py-5">
+                  <Text className="text-sm font-semibold uppercase tracking-[2px] text-rose-100">
+                    Status
+                  </Text>
+                  {locationError ? (
+                    <Text className="text-sm text-white/80">
+                      Location: {locationError}
+                    </Text>
+                  ) : null}
+                  {weatherError ? (
+                    <Text className="text-sm text-white/80">
+                      Weather: {weatherError}
+                    </Text>
+                  ) : null}
+                  {geocodingError ? (
+                    <Text className="text-sm text-white/80">
+                      Search: {geocodingError}
+                    </Text>
+                  ) : null}
+                </View>
+              </BlurView>
+            ) : null}
+          </View>
+        </ScrollView>
+      </WeatherBackground>
     </View>
   );
 }

@@ -1,12 +1,18 @@
-import React from 'react';
-import { View, Text, ViewStyle } from 'react-native';
-import { BlurView } from 'expo-blur';
-import { WEATHER_CODES } from '@/constants/weatherCodes';
-import { WeatherCardProps } from '@/types/weatherTypes';
+import { WEATHER_CODES } from "@/constants/weatherCodes";
+import { WeatherCardProps } from "@/types/weatherTypes";
+import { BlurView } from "expo-blur";
+import React from "react";
+import { Text, View, ViewStyle } from "react-native";
+
+function resolveWeatherIcon(
+  iconModule: WeatherCardProps["weatherCode"] extends number ? any : never,
+) {
+  return iconModule?.default ?? iconModule;
+}
 
 // ─── Component ────────────────────────────────────────────────────────────────
 export default function WeatherCard({
-  size = 'main',
+  size = "main",
   city,
   country,
   temperature,
@@ -16,13 +22,13 @@ export default function WeatherCard({
   humidity,
   windSpeed,
   time,
-  className = '',
+  className = "",
   style,
 }: WeatherCardProps) {
-  const variant = isDay === 0 ? 'night' : 'day';
+  const variant = isDay === 0 ? "night" : "day";
   const weather = WEATHER_CODES[weatherCode] ?? WEATHER_CODES[0];
-  const WeatherIcon = weather.icon[variant];
-  const isMain = size === 'main';
+  const WeatherIcon = resolveWeatherIcon(weather.icon[variant]);
+  const isMain = size === "main";
 
   if (isMain) {
     return (
@@ -38,7 +44,7 @@ export default function WeatherCard({
         {/* Glow blob */}
         <View
           className="absolute -top-10 -right-10 w-28 h-28 rounded-full bg-white/5"
-          style={{ filter: 'blur(20px)' } as ViewStyle}
+          style={{ filter: "blur(20px)" } as ViewStyle}
         />
 
         <View className="relative z-10 p-6">
@@ -107,7 +113,7 @@ export default function WeatherCard({
 
       <View className="relative z-10 py-4 px-3 items-center gap-1.5">
         <Text className="text-[11px] font-semibold text-white/55 uppercase tracking-widest">
-          {time ?? 'Now'}
+          {time ?? "Now"}
         </Text>
 
         {/* ── SVG Icon ── */}
@@ -119,9 +125,7 @@ export default function WeatherCard({
         <Text className="text-[10px] text-white/45 text-center">
           {weather.label}
         </Text>
-        <Text className="text-[11px] text-white/45">
-          💧 {humidity}%
-        </Text>
+        <Text className="text-[11px] text-white/45">💧 {humidity}%</Text>
       </View>
     </BlurView>
   );

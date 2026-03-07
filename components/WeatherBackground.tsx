@@ -1,20 +1,17 @@
-import React, { useEffect, useRef } from 'react';
-import { Animated, Dimensions, StyleSheet, View } from 'react-native';
-import { LinearGradient } from 'expo-linear-gradient';
-import { StatusBar } from 'expo-status-bar';
-import { WeatherBackgroundProps } from '@/types/weatherTypes';
-import {
-  WEATHER_THEMES,
-  getWeatherThemeKey,
-} from '@/constants/weatherThemes';
+import { WEATHER_THEMES, getWeatherThemeKey } from "@/constants/weatherThemes";
+import { WeatherBackgroundProps } from "@/types/weatherTypes";
+import { LinearGradient } from "expo-linear-gradient";
+import { StatusBar } from "expo-status-bar";
+import React, { useEffect, useRef } from "react";
+import { Animated, Dimensions, StyleSheet, View } from "react-native";
 
 // Get screen dimensions for blob sizing
-const { width, height } = Dimensions.get('window');
+const { width } = Dimensions.get("window");
 
 /**
  * WeatherBackground component renders a dynamic gradient background with animated blobs based on the current weather conditions.
- * @param param0 
- * @returns 
+ * @param param0
+ * @returns
  */
 export default function WeatherBackground({
   weatherCode,
@@ -46,7 +43,7 @@ export default function WeatherBackground({
         useNativeDriver: true,
       }),
     ]).start();
-  }, [fadeAnim]);
+  }, [weatherCode, isDay, fadeAnim]);
 
   // Slow floating blob animation — loops forever
   useEffect(() => {
@@ -55,23 +52,47 @@ export default function WeatherBackground({
       animY: Animated.Value,
       rangeX: number,
       rangeY: number,
-      duration: number
+      duration: number,
     ) => {
       Animated.loop(
         Animated.sequence([
           Animated.parallel([
-            Animated.timing(animX, { toValue: rangeX,  duration, useNativeDriver: true }),
-            Animated.timing(animY, { toValue: rangeY,  duration, useNativeDriver: true }),
+            Animated.timing(animX, {
+              toValue: rangeX,
+              duration,
+              useNativeDriver: true,
+            }),
+            Animated.timing(animY, {
+              toValue: rangeY,
+              duration,
+              useNativeDriver: true,
+            }),
           ]),
           Animated.parallel([
-            Animated.timing(animX, { toValue: -rangeX, duration, useNativeDriver: true }),
-            Animated.timing(animY, { toValue: -rangeY, duration, useNativeDriver: true }),
+            Animated.timing(animX, {
+              toValue: -rangeX,
+              duration,
+              useNativeDriver: true,
+            }),
+            Animated.timing(animY, {
+              toValue: -rangeY,
+              duration,
+              useNativeDriver: true,
+            }),
           ]),
           Animated.parallel([
-            Animated.timing(animX, { toValue: 0, duration, useNativeDriver: true }),
-            Animated.timing(animY, { toValue: 0, duration, useNativeDriver: true }),
+            Animated.timing(animX, {
+              toValue: 0,
+              duration,
+              useNativeDriver: true,
+            }),
+            Animated.timing(animY, {
+              toValue: 0,
+              duration,
+              useNativeDriver: true,
+            }),
           ]),
-        ])
+        ]),
       ).start();
     };
 
@@ -131,7 +152,7 @@ const styles = StyleSheet.create({
     flex: 1,
   },
   blob: {
-    position: 'absolute',
+    position: "absolute",
     borderRadius: 999,
   },
   blob1: {
