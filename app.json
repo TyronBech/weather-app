@@ -4,7 +4,7 @@
     "slug": "weather-app",
     "version": "1.0.0",
     "orientation": "portrait",
-    "icon": "./assets/svg/google/v4/isolated_scattered_thunderstorms_day.svg",
+    "icon": "./assets/images/icon.png",
     "scheme": "weatherapp",
     "userInterfaceStyle": "automatic",
     "ios": {
@@ -12,6 +12,9 @@
     },
     "android": {
       "adaptiveIcon": {
+        "foregroundImage": "./assets/images/android-icon-foreground.png",
+        "backgroundImage": "./assets/images/android-icon-background.png",
+        "monochromeImage": "./assets/images/android-icon-monochrome.png",
         "backgroundColor": "#E6F4FE"
       },
       "predictiveBackGestureEnabled": false
@@ -30,7 +33,7 @@
       [
         "expo-splash-screen",
         {
-          "image": "./assets/svg/google/v4/very_hot.svg",
+          "image": "./assets/images/splash-icon.png",
           "imageWidth": 200,
           "resizeMode": "contain",
           "backgroundColor": "#ffffff",

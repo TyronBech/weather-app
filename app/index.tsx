@@ -7,7 +7,6 @@ import { useWeather } from "@/hooks/useWeather";
 import { GeocodingResult } from "@/types/geocoding";
 import { Ionicons, MaterialCommunityIcons } from "@expo/vector-icons";
 import { BlurView } from "expo-blur";
-import { StatusBar } from "expo-status-bar";
 import { useEffect, useMemo, useState } from "react";
 import {
   ActivityIndicator,
@@ -130,7 +129,6 @@ export default function Index() {
 
   return (
     <View className="flex-1" style={{ paddingTop: insets.top }}>
-      <StatusBar style="auto" translucent={true} />
       <WeatherBackground
         weatherCode={backgroundWeatherCode}
         isDay={backgroundIsDay}
