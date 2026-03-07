@@ -25,6 +25,7 @@ export function useWeather(latitude: number | null, longitude: number | null) {
 
     setLoading(true);
     setError(null);
+    setError(null);
     fetchWeather(latitude, longitude)
       .then((result) => {
         if (!didCancel) setData(result);
