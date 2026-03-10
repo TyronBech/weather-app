@@ -1,4 +1,4 @@
-﻿import { MaterialCommunityIcons } from "@expo/vector-icons";
+import { MaterialCommunityIcons } from "@expo/vector-icons";
 import { ActivityIndicator, Text, View } from "react-native";
 import { WeatherAdviceProps } from "@/types/weatherAdvice";
 
