@@ -1,3 +1,4 @@
+import WeatherAdvice from "@/components/WeatherAdvice";
 import { WEATHER_CODES } from "@/constants/weatherCodes";
 import { WeatherCardProps } from "@/types/weatherTypes";
 import { BlurView } from "expo-blur";
@@ -24,6 +25,9 @@ export default function WeatherCard({
   time,
   className = "",
   style,
+  advice,
+  adviceLoading,
+  adviceError,
 }: WeatherCardProps) {
   const variant = isDay === 0 ? "night" : "day";
   const weather = WEATHER_CODES[weatherCode] ?? WEATHER_CODES[0];
@@ -44,7 +48,11 @@ export default function WeatherCard({
         {/* Glow blob */}
         <View
           className="absolute -top-10 -right-10 w-28 h-28 rounded-full bg-white/5"
-          style={Platform.OS === "web" ? ({ filter: "blur(20px)" } as object) : undefined}
+          style={
+            Platform.OS === "web"
+              ? ({ filter: "blur(20px)" } as object)
+              : undefined
+          }
         />
 
         <View className="relative z-10 p-6">
@@ -72,7 +80,8 @@ export default function WeatherCard({
           </View>
 
           <Text className="text-sm text-white/55 mt-1">
-            {weather.label}{feelsLike != null ? ` · Feels like ${feelsLike}°C` : ""}
+            {weather.label}
+            {feelsLike != null ? ` · Feels like ${feelsLike}°C` : ""}
           </Text>
 
           {/* Stats row */}
@@ -95,6 +104,13 @@ export default function WeatherCard({
               </Text>
             </View>
           </View>
+
+          {/* AI Advice section */}
+          <WeatherAdvice
+            advice={advice ?? null}
+            loading={adviceLoading ?? false}
+            error={adviceError ?? null}
+          />
         </View>
       </BlurView>
     );

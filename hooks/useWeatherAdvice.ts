@@ -1,0 +1,69 @@
+import { useCallback, useState } from "react";
+
+export function useWeatherAdvice() {
+  const [advice, setAdvice] = useState<string | null>(null);
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState<string | null>(null);
+
+  const fetchAdvice = useCallback(
+    async (weatherData: {
+      temperature: number;
+      weatherCode: number;
+      rainChance: number;
+      windSpeed: number;
+      humidity: number;
+      isDay: number;
+    }) => {
+      setLoading(true);
+      setError(null);
+      try {
+        const response = await fetch(
+          process.env.EXPO_PUBLIC_GROQ_API_BASE_URL ?? "",
+          {
+            method: "POST",
+            headers: {
+              "Content-Type": "application/json",
+              Authorization: `Bearer ${process.env.EXPO_PUBLIC_GROQ_API_KEY}`,
+            },
+            body: JSON.stringify({
+              model: process.env.EXPO_PUBLIC_GROQ_MODEL ?? "",
+              max_tokens: 100,
+              messages: [
+                {
+                  role: "system",
+                  content: `You give 1-2 sentences only of advice that is funny, slightly over-the-top, but genuinely useful. `,
+                },
+                {
+                  role: "user",
+                  content: `Current conditions:
+                            - Temperature: ${weatherData.temperature}°C
+                            - Rain chance: ${weatherData.rainChance}%
+                            - Wind speed: ${weatherData.windSpeed} km/h
+                            - Humidity: ${weatherData.humidity}%
+                            - Time of day: ${weatherData.isDay === 1 ? "Daytime" : "Nighttime"}
+                            Give me your best weather advice for going outside right now.`,
+                },
+              ],
+            }),
+          },
+        );
+        if (!response.ok) {
+          const errBody = await response.json().catch(() => ({}));
+          throw new Error(
+            (errBody as any)?.error?.message ?? `API error ${response.status}`,
+          );
+        }
+        const data = await response.json();
+        const text = data.choices?.[0]?.message?.content;
+        if (!text) throw new Error("Unexpected response from AI");
+        setAdvice(text.trim());
+      } catch (err) {
+        setError(err instanceof Error ? err.message : String(err));
+      } finally {
+        setLoading(false);
+      }
+    },
+    [],
+  );
+  return { advice, loading, error, fetchAdvice };
+}

@@ -1,9 +1,10 @@
+import DetailCard from "@/components/DetailCard";
 import WeatherBackground from "@/components/WeatherBackground";
 import WeatherCard from "@/components/WeatherCard";
-import DetailCard from "@/components/DetailCard";
 import { useGeocoding } from "@/hooks/useGeocoding";
 import { useLocation } from "@/hooks/useLocation";
 import { useWeather } from "@/hooks/useWeather";
+import { useWeatherAdvice } from "@/hooks/useWeatherAdvice";
 import { GeocodingResult } from "@/types/geocoding";
 import { Ionicons, MaterialCommunityIcons } from "@expo/vector-icons";
 import { BlurView } from "expo-blur";
@@ -49,21 +50,36 @@ export default function Index() {
     activeCoordinates?.latitude ?? null,
     activeCoordinates?.longitude ?? null,
   );
-
+  const {
+    advice,
+    loading: adviceLoading,
+    error: adviceError,
+    fetchAdvice,
+  } = useWeatherAdvice();
   useEffect(() => {
     const trimmedQuery = searchQuery.trim();
 
     if (trimmedQuery.length < 2) {
       return;
     }
-
     const timeoutId = setTimeout(() => {
       search(trimmedQuery);
     }, 350);
 
     return () => clearTimeout(timeoutId);
   }, [search, searchQuery]);
+  useEffect(() => {
+    if (!data) return;
 
+    fetchAdvice({
+      temperature: data?.current.temperature_2m,
+      weatherCode: data?.current.weather_code,
+      rainChance: data?.current.precipitation ?? 0,
+      windSpeed: data?.current.wind_speed_10m,
+      humidity: data?.current.relative_humidity_2m,
+      isDay: 0
+    });
+  }, [data, fetchAdvice]);
   const activeCity =
     selectedLocation?.name ??
     locationDetails?.city ??
@@ -128,7 +144,7 @@ export default function Index() {
   }
 
   return (
-    <View className="flex-1" style={{ paddingTop: insets.top }}>
+    <View className="flex-1 " style={{ paddingTop: insets.top, paddingBottom: insets.bottom }}>
       <WeatherBackground
         weatherCode={backgroundWeatherCode}
         isDay={backgroundIsDay}
@@ -257,6 +273,9 @@ export default function Index() {
                     isDay={currentWeather.is_day}
                     humidity={Math.round(currentWeather.relative_humidity_2m)}
                     windSpeed={Math.round(currentWeather.wind_speed_10m)}
+                    advice={advice}
+                    adviceLoading={adviceLoading}
+                    adviceError={adviceError}
                   />
                 </View>
 

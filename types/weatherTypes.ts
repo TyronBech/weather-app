@@ -22,6 +22,9 @@ export interface WeatherCardProps {
   time?: string;
   className?: string;
   style?: StyleProp<ViewStyle>;
+  advice?: string | null;
+  adviceLoading?: boolean;
+  adviceError?: string | null;
 }
 
 /**
