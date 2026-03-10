@@ -24,7 +24,7 @@ function resolveWeatherIcon(
  * - weatherCode: A code representing the current weather condition, used to determine the appropriate icon and label.
  * - isDay: A flag indicating whether it's day (1) or night (0).
  * - humidity: The humidity percentage.
- * - windSpeed: The wind speed in meters per second.
+ * - windSpeed: The wind speed in kilometers per hour (km/h).
  * - time: The time of the weather data in 24-hour format.
  * - className: Additional CSS classes to apply to the component.
  * - style: Inline styles to apply to the component.

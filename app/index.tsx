@@ -73,13 +73,21 @@ export default function Index() {
   useEffect(() => {
     if (!data) return;
 
+    const currentIndex = Math.max(
+      data.hourly.time.findIndex((value) => value >= data.current.time),
+      0,
+    );
+
+    const rainChance =
+      data.hourly.precipitation_probability[currentIndex] ?? 0;
+
     fetchAdvice({
-      temperature: data?.current.temperature_2m,
-      weatherCode: data?.current.weather_code,
-      rainChance: data?.current.precipitation ?? 0,
-      windSpeed: data?.current.wind_speed_10m,
-      humidity: data?.current.relative_humidity_2m,
-      isDay: 0
+      temperature: data.current.temperature_2m,
+      weatherCode: data.current.weather_code,
+      rainChance,
+      windSpeed: data.current.wind_speed_10m,
+      humidity: data.current.relative_humidity_2m,
+      isDay: data.current.is_day,
     });
   }, [data, fetchAdvice]);
   const activeCity =
