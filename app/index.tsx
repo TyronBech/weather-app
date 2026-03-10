@@ -19,11 +19,13 @@ import {
 } from "react-native";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 
+// Format hour label
 function formatHourLabel(value: string) {
   const date = new Date(value);
   return date.toLocaleTimeString([], { hour: "numeric" });
 }
 
+// Main component
 export default function Index() {
   const insets = useSafeAreaInsets();
   const [searchQuery, setSearchQuery] = useState("");

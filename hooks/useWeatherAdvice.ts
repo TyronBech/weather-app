@@ -1,5 +1,11 @@
 import { useCallback, useState } from "react";
 
+/**
+ * Custom hook to fetch AI-generated weather advice based on current weather conditions.
+ * It manages the advice text, loading state, and any errors that may occur during the fetch.
+ *
+ * @returns An object containing the advice, loading state, error message, and a function to fetch advice.
+ */
 export function useWeatherAdvice() {
   const [advice, setAdvice] = useState<string | null>(null);
   const [loading, setLoading] = useState(false);
@@ -17,6 +23,7 @@ export function useWeatherAdvice() {
       setLoading(true);
       setError(null);
       try {
+        // Call the GROQ API to get weather advice based on current conditions
         const response = await fetch(
           process.env.EXPO_PUBLIC_GROQ_API_BASE_URL ?? "",
           {

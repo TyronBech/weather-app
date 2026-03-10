@@ -2,6 +2,21 @@
 import { ActivityIndicator, Text, View } from "react-native";
 import { WeatherAdviceProps } from "@/types/weatherAdvice";
 
+
+/**
+ * Component for displaying weather advice based on current weather conditions.
+ * It renders a loading indicator, advice text, or an error message if applicable.
+ * Props:
+ * - advice: The weather advice text to display.
+ * - loading: A boolean indicating whether the advice is currently being fetched.
+ * - error: An error message to display if fetching advice fails.
+ * The component is designed to be visually integrated with the overall weather app, using a consistent style and layout.
+ * It conditionally renders content based on the loading state, presence of advice, and any errors.
+ * If there is no advice, no loading, and no error, it returns null to avoid rendering an empty section.
+ * @component 
+ * @returns A React component that displays weather advice, a loading state, or an error message based on the provided props.
+ * @see WeatherAdviceProps
+ */
 export default function WeatherAdvice({ advice, loading, error }: WeatherAdviceProps) {
   if (!loading && !advice && !error) return null;
 
