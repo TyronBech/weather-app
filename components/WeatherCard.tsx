@@ -1,3 +1,4 @@
+import WeatherAdvice from "@/components/WeatherAdvice";
 import { WEATHER_CODES } from "@/constants/weatherCodes";
 import { WeatherCardProps } from "@/types/weatherTypes";
 import { BlurView } from "expo-blur";
@@ -10,7 +11,30 @@ function resolveWeatherIcon(
   return iconModule?.default ?? iconModule;
 }
 
-// ─── Component ────────────────────────────────────────────────────────────────
+/**
+ * WeatherCard component displays current weather information in a stylized card format.
+ * It uses a blurred background for a modern look and includes details like temperature, humidity, wind speed, and an AI-generated advice section.
+ * The component is designed to be used within the WeatherScreen component to show the current weather conditions in a visually appealing way.
+ * Props:
+ * - size: Determines the size of the card ("main" for the main weather card, "hourly" for smaller hourly forecast cards).
+ * - city: The name of the city for which the weather is being displayed.
+ * - country: The country of the city.
+ * - temperature: The current temperature in Celsius.
+ * - feelsLike: The "feels like" temperature in Celsius.
+ * - weatherCode: A code representing the current weather condition, used to determine the appropriate icon and label.
+ * - isDay: A flag indicating whether it's day (1) or night (0).
+ * - humidity: The humidity percentage.
+ * - windSpeed: The wind speed in kilometers per hour (km/h).
+ * - time: The time of the weather data in 24-hour format.
+ * - className: Additional CSS classes to apply to the component.
+ * - style: Inline styles to apply to the component.
+ * - advice: The AI-generated weather advice text.
+ * - adviceLoading: A boolean indicating whether the advice is currently being fetched.
+ * - adviceError: An error message to display if fetching advice fails.
+ * @component
+ * @returns A React component that displays current weather information in a stylized card format, including an AI advice section based on the current weather conditions.
+ * @see WeatherCardProps
+ */
 export default function WeatherCard({
   size = "main",
   city,
@@ -24,6 +48,9 @@ export default function WeatherCard({
   time,
   className = "",
   style,
+  advice,
+  adviceLoading,
+  adviceError,
 }: WeatherCardProps) {
   const variant = isDay === 0 ? "night" : "day";
   const weather = WEATHER_CODES[weatherCode] ?? WEATHER_CODES[0];
@@ -44,7 +71,11 @@ export default function WeatherCard({
         {/* Glow blob */}
         <View
           className="absolute -top-10 -right-10 w-28 h-28 rounded-full bg-white/5"
-          style={Platform.OS === "web" ? ({ filter: "blur(20px)" } as object) : undefined}
+          style={
+            Platform.OS === "web"
+              ? ({ filter: "blur(20px)" } as object)
+              : undefined
+          }
         />
 
         <View className="relative z-10 p-6">
@@ -72,7 +103,8 @@ export default function WeatherCard({
           </View>
 
           <Text className="text-sm text-white/55 mt-1">
-            {weather.label}{feelsLike != null ? ` · Feels like ${feelsLike}°C` : ""}
+            {weather.label}
+            {feelsLike != null ? ` · Feels like ${feelsLike}°C` : ""}
           </Text>
 
           {/* Stats row */}
@@ -95,6 +127,13 @@ export default function WeatherCard({
               </Text>
             </View>
           </View>
+
+          {/* AI Advice section */}
+          <WeatherAdvice
+            advice={advice ?? null}
+            loading={adviceLoading ?? false}
+            error={adviceError ?? null}
+          />
         </View>
       </BlurView>
     );

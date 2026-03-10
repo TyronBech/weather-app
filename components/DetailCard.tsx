@@ -3,6 +3,17 @@ import { MaterialCommunityIcons } from '@expo/vector-icons';
 import React from 'react';
 import { Text, View } from 'react-native';
 
+/**
+ * DetailCard component displays a single piece of weather information (like humidity, wind speed, etc.) in a stylized card format.
+ * It uses a blurred background for a modern look and includes an icon, a label, and the corresponding value.
+ * The component is designed to be used within the WeatherCard component to show specific details about the current weather conditions in a visually appealing way.
+ * @component
+ * @param {Object} props - The props for the DetailCard component.
+ * @param {string} props.icon - The name of the icon to display (from MaterialCommunityIcons).
+ * @param {string} props.label - The label or title of the weather information.
+ * @param {string} props.value - The value or amount of the weather information.
+ * @returns {JSX.Element} A React component that displays a weather detail in a stylized card format.
+ */
 export default function DetailCard({
   icon,
   label,

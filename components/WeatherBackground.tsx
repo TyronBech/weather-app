@@ -10,8 +10,16 @@ const { width } = Dimensions.get("window");
 
 /**
  * WeatherBackground component renders a dynamic gradient background with animated blobs based on the current weather conditions.
- * @param param0
- * @returns
+ * It uses the weather code and day/night information to determine the appropriate color scheme and animation style.
+ * The component includes a fade transition effect when the weather conditions change, providing a smooth visual experience.
+ * It is designed to wrap around the main content of the weather screen, allowing the dynamic background to enhance the overall aesthetic of the app.
+ * Props:
+ * - weatherCode: The weather code representing the current weather conditions.
+ * - isDay: A flag indicating whether it's day (1) or night (0).
+ * - children: The content to be wrapped by the WeatherBackground component.
+ * @component
+ * @returns A React component that renders a dynamic gradient background with animated blobs based on the current weather conditions, and wraps around the provided children content.
+ * @see WeatherBackgroundProps
  */
 export default function WeatherBackground({
   weatherCode,
