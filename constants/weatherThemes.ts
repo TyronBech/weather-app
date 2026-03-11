@@ -202,13 +202,26 @@ export function getWeatherThemeKey(
 ): string {
   const night = isDay === 0;
 
-  // Check for sunrise and sunset times (around 5 AM and 5 PM)
+  // Check for sunrise and sunset times (around 5–6 AM and 4–5 PM)
   if (currentTime && weatherCode <= 2) {
-    const hour = new Date(currentTime).getHours();
-    // 5 AM (05:XX)
-    if (hour === 5 || hour === 6) return "sunrise";
-    // 5 PM (17:XX)
-    if (hour === 16 || hour === 17) return "sunset";
+    // Open-Meteo times are local to the forecast location and may be offset-less,
+    // so avoid `new Date()` (which would interpret them in the device timezone).
+    // Instead, parse the hour directly from the timestamp string (e.g. "YYYY-MM-DDTHH:MM").
+    const timeSeparatorIndex =
+      currentTime.indexOf("T") !== -1
+        ? currentTime.indexOf("T")
+        : currentTime.indexOf(" ");
+    let hour = NaN;
+    if (timeSeparatorIndex !== -1 && currentTime.length > timeSeparatorIndex + 2) {
+      const hourString = currentTime.substring(timeSeparatorIndex + 1, timeSeparatorIndex + 3);
+      hour = parseInt(hourString, 10);
+    }
+    if (!Number.isNaN(hour)) {
+      // Sunrise window: 5–6 AM (05:XX–06:XX)
+      if (hour === 5 || hour === 6) return "sunrise";
+      // Sunset window: 4–5 PM (16:XX–17:XX)
+      if (hour === 16 || hour === 17) return "sunset";
+    }
   }
 
   if (weatherCode === 0) return night ? "clear_night" : "clear_day";

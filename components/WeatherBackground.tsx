@@ -193,11 +193,13 @@ export default function WeatherBackground({
               },
               Platform.OS === "web"
                 ? { filter: "blur(40px)" as any }
-                : {
-                    shadowColor: themeKey === "sunrise" ? "#FFD480" : "#FF8C42",
-                    shadowOpacity: 0.8,
-                    shadowRadius: 60,
-                  },
+                : Platform.OS === "android"
+                  ? { elevation: 20 }
+                  : {
+                      shadowColor: themeKey === "sunrise" ? "#FFD480" : "#FF8C42",
+                      shadowOpacity: 0.8,
+                      shadowRadius: 60,
+                    },
             ]}
           />
         )}
