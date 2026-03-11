@@ -5,122 +5,225 @@
 export interface WeatherTheme {
   gradientColors: string[];
   blobColors: string[];
-  statusBarStyle: 'light' | 'dark';
+  statusBarStyle: "light" | "dark";
 }
 
 /**
- * A mapping of theme keys to their corresponding WeatherTheme objects. 
+ * A mapping of theme keys to their corresponding WeatherTheme objects.
  * These themes are used to style the background based on the current weather conditions.
  */
 export const WEATHER_THEMES: Record<string, WeatherTheme> = {
   // ── Clear Day ─────────────────────────────────────────────────
   clear_day: {
-    gradientColors: ['#1a6bbd', '#2e8fe0', '#74c3f7'],
-    blobColors:     ['rgba(255, 220, 80, 0.25)', 'rgba(255, 180, 40, 0.15)'],
-    statusBarStyle: 'light',
+    gradientColors: ["#0A84FF", "#30B0FF", "#74c3f7", "#B6DEF7"],
+    blobColors: [
+      "rgba(255, 230, 100, 0.4)",
+      "rgba(255, 180, 50, 0.3)",
+      "rgba(255, 255, 255, 0.2)",
+      "rgba(100, 200, 255, 0.3)",
+    ],
+    statusBarStyle: "light",
   },
 
   // ── Clear Night ───────────────────────────────────────────────
   clear_night: {
-    gradientColors: ['#0a0e27', '#0f1f4a', '#1a2d6b'],
-    blobColors:     ['rgba(160, 180, 255, 0.15)', 'rgba(100, 120, 255, 0.1)'],
-    statusBarStyle: 'light',
+    gradientColors: ["#0A0F1D", "#151B30", "#212242", "#2B2D4E"],
+    blobColors: [
+      "rgba(140, 160, 255, 0.25)",
+      "rgba(100, 110, 255, 0.15)",
+      "rgba(140, 110, 255, 0.1)",
+      "rgba(60, 60, 110, 0.2)",
+    ],
+    statusBarStyle: "light",
   },
 
   // ── Mostly / Partly Cloudy Day ────────────────────────────────
   partly_cloudy_day: {
-    gradientColors: ['#1e6fa8', '#3a8fbf', '#89c4e1'],
-    blobColors:     ['rgba(255, 255, 255, 0.2)', 'rgba(180, 220, 255, 0.15)'],
-    statusBarStyle: 'light',
+    gradientColors: ["#3A8FBF", "#5CADD6", "#89C4E1", "#BFE0F0"],
+    blobColors: [
+      "rgba(255, 255, 255, 0.3)",
+      "rgba(255, 240, 200, 0.2)",
+      "rgba(200, 230, 255, 0.25)",
+      "rgba(150, 210, 255, 0.2)",
+    ],
+    statusBarStyle: "light",
   },
 
   // ── Mostly / Partly Cloudy Night ─────────────────────────────
   partly_cloudy_night: {
-    gradientColors: ['#111827', '#1f2e45', '#243550'],
-    blobColors:     ['rgba(150, 170, 220, 0.12)', 'rgba(100, 130, 200, 0.08)'],
-    statusBarStyle: 'light',
+    gradientColors: ["#111422", "#192036", "#262945", "#333552"],
+    blobColors: [
+      "rgba(170, 180, 230, 0.15)",
+      "rgba(120, 130, 210, 0.1)",
+      "rgba(90, 95, 160, 0.15)",
+      "rgba(180, 170, 230, 0.05)",
+    ],
+    statusBarStyle: "light",
+  },
+
+  // ── Sunrise ──────────────────────────────────────────────────
+  sunrise: {
+    gradientColors: ["#2d4263", "#746b89", "#c68b8e", "#f3b999"],
+    blobColors: [
+      "rgba(255, 150, 100, 0.3)",
+      "rgba(255, 200, 150, 0.4)",
+      "rgba(200, 100, 150, 0.25)",
+      "rgba(240, 220, 180, 0.3)",
+    ],
+    statusBarStyle: "light",
+  },
+
+  // ── Sunset ───────────────────────────────────────────────────
+  sunset: {
+    gradientColors: ["#121620", "#4B3654", "#8A4C62", "#D87A6E"],
+    blobColors: [
+      "rgba(255, 100, 80, 0.3)",
+      "rgba(200, 60, 100, 0.35)",
+      "rgba(150, 50, 100, 0.25)",
+      "rgba(255, 160, 100, 0.2)",
+    ],
+    statusBarStyle: "light",
   },
 
   // ── Overcast ──────────────────────────────────────────────────
   cloudy: {
-    gradientColors: ['#3d4f5e', '#546070', '#7a8a96'],
-    blobColors:     ['rgba(200, 210, 220, 0.15)', 'rgba(180, 190, 200, 0.1)'],
-    statusBarStyle: 'light',
+    gradientColors: ["#4E5B68", "#687785", "#8997A5", "#A5B2BD"],
+    blobColors: [
+      "rgba(220, 230, 240, 0.2)",
+      "rgba(200, 210, 220, 0.15)",
+      "rgba(180, 190, 200, 0.15)",
+      "rgba(150, 160, 170, 0.1)",
+    ],
+    statusBarStyle: "light",
   },
 
   // ── Fog / Haze ────────────────────────────────────────────────
   fog: {
-    gradientColors: ['#5a6470', '#7a8490', '#a0aab0'],
-    blobColors:     ['rgba(220, 225, 230, 0.25)', 'rgba(200, 205, 210, 0.2)'],
-    statusBarStyle: 'dark',
+    gradientColors: ["#697682", "#8694A0", "#A9B4BE", "#C6CFD6"],
+    blobColors: [
+      "rgba(240, 245, 250, 0.3)",
+      "rgba(210, 220, 230, 0.2)",
+      "rgba(190, 200, 210, 0.2)",
+      "rgba(255, 255, 255, 0.15)",
+    ],
+    statusBarStyle: "dark",
   },
 
   // ── Drizzle ───────────────────────────────────────────────────
   drizzle: {
-    gradientColors: ['#2c4a6a', '#3d6080', '#5580a0'],
-    blobColors:     ['rgba(120, 180, 230, 0.2)', 'rgba(100, 160, 210, 0.12)'],
-    statusBarStyle: 'light',
+    gradientColors: ["#324C65", "#486A89", "#638BAA", "#83A6C2"],
+    blobColors: [
+      "rgba(150, 200, 240, 0.25)",
+      "rgba(120, 180, 220, 0.15)",
+      "rgba(100, 160, 200, 0.15)",
+      "rgba(80, 140, 180, 0.1)",
+    ],
+    statusBarStyle: "light",
   },
 
   // ── Rain ──────────────────────────────────────────────────────
   rain: {
-    gradientColors: ['#1a3045', '#243d55', '#2e5070'],
-    blobColors:     ['rgba(80, 140, 200, 0.2)', 'rgba(60, 120, 180, 0.15)'],
-    statusBarStyle: 'light',
+    gradientColors: ["#1C334A", "#294867", "#385F85", "#4E779E"],
+    blobColors: [
+      "rgba(100, 160, 220, 0.2)",
+      "rgba(80, 140, 200, 0.15)",
+      "rgba(60, 110, 170, 0.2)",
+      "rgba(40, 90, 150, 0.1)",
+    ],
+    statusBarStyle: "light",
   },
 
   // ── Heavy Rain ────────────────────────────────────────────────
   heavy_rain: {
-    gradientColors: ['#111e2b', '#182535', '#1e3045'],
-    blobColors:     ['rgba(50, 100, 160, 0.25)', 'rgba(30, 80, 140, 0.2)'],
-    statusBarStyle: 'light',
+    gradientColors: ["#122030", "#1C3048", "#264261", "#34557A"],
+    blobColors: [
+      "rgba(80, 130, 190, 0.2)",
+      "rgba(60, 100, 160, 0.15)",
+      "rgba(50, 90, 140, 0.15)",
+      "rgba(30, 70, 120, 0.1)",
+    ],
+    statusBarStyle: "light",
   },
 
   // ── Snow ──────────────────────────────────────────────────────
   snow: {
-    gradientColors: ['#2a3f5f', '#4a6080', '#8aaac0'],
-    blobColors:     ['rgba(220, 235, 255, 0.25)', 'rgba(200, 220, 245, 0.2)'],
-    statusBarStyle: 'light',
+    gradientColors: ["#3A5070", "#5B7699", "#8CA8C2", "#BBCFE0"],
+    blobColors: [
+      "rgba(255, 255, 255, 0.3)",
+      "rgba(230, 240, 255, 0.25)",
+      "rgba(200, 220, 245, 0.2)",
+      "rgba(180, 200, 230, 0.15)",
+    ],
+    statusBarStyle: "light",
   },
 
   // ── Thunderstorm ──────────────────────────────────────────────
   thunderstorm: {
-    gradientColors: ['#0d1117', '#1a1f2e', '#252840'],
-    blobColors:     ['rgba(140, 100, 255, 0.2)', 'rgba(80, 60, 200, 0.15)'],
-    statusBarStyle: 'light',
+    gradientColors: ["#131022", "#221F38", "#342D52", "#4B426D"],
+    blobColors: [
+      "rgba(150, 100, 255, 0.25)",
+      "rgba(100, 80, 220, 0.15)",
+      "rgba(255, 230, 100, 0.1)",
+      "rgba(120, 60, 200, 0.2)",
+    ],
+    statusBarStyle: "light",
   },
 
   // ── Sleet / Hail ──────────────────────────────────────────────
   sleet: {
-    gradientColors: ['#2a3545', '#3a4555', '#506070'],
-    blobColors:     ['rgba(180, 200, 220, 0.18)', 'rgba(160, 180, 200, 0.12)'],
-    statusBarStyle: 'light',
+    gradientColors: ["#303D4F", "#46566B", "#607289", "#7F91A8"],
+    blobColors: [
+      "rgba(200, 210, 230, 0.2)",
+      "rgba(170, 190, 210, 0.15)",
+      "rgba(150, 170, 190, 0.15)",
+      "rgba(130, 150, 170, 0.1)",
+    ],
+    statusBarStyle: "light",
   },
 
   // ── Fallback ──────────────────────────────────────────────────
   default: {
-    gradientColors: ['#0f2027', '#203a43', '#2c5364'],
-    blobColors:     ['rgba(100, 180, 255, 0.1)', 'rgba(80, 140, 220, 0.08)'],
-    statusBarStyle: 'light',
+    gradientColors: ["#10252E", "#1C3A47", "#2E5463", "#437385"],
+    blobColors: [
+      "rgba(120, 190, 255, 0.15)",
+      "rgba(90, 150, 230, 0.1)",
+      "rgba(60, 120, 200, 0.1)",
+      "rgba(40, 90, 170, 0.08)",
+    ],
+    statusBarStyle: "light",
   },
 };
 
 // ── Maps WMO weatherCode + isDay → a theme key ────────────────
-export function getWeatherThemeKey(weatherCode: number, isDay: 0 | 1): string {
+export function getWeatherThemeKey(
+  weatherCode: number,
+  isDay: 0 | 1,
+  currentTime?: string,
+): string {
   const night = isDay === 0;
 
-  if (weatherCode === 0)  return night ? 'clear_night'         : 'clear_day';
-  if (weatherCode <= 2)   return night ? 'partly_cloudy_night' : 'partly_cloudy_day';
-  if (weatherCode === 3)  return 'cloudy';
-  if (weatherCode <= 48)  return 'fog';
-  if (weatherCode <= 55)  return 'drizzle';
-  if (weatherCode <= 57)  return 'sleet';
-  if (weatherCode <= 65)  return 'rain';
-  if (weatherCode <= 67)  return 'sleet';
-  if (weatherCode <= 77)  return 'snow';
-  if (weatherCode <= 82)  return 'rain';
-  if (weatherCode <= 86)  return 'snow';
-  if (weatherCode >= 95)  return 'thunderstorm';
+  // Check for sunrise and sunset times (around 5 AM and 5 PM)
+  if (currentTime && weatherCode <= 2) {
+    const hour = new Date(currentTime).getHours();
+    // 5 AM (05:XX)
+    if (hour === 5 || hour === 6) return "sunrise";
+    // 5 PM (17:XX)
+    if (hour === 16 || hour === 17) return "sunset";
+  }
 
-  return 'default';
+  if (weatherCode === 0) return night ? "clear_night" : "clear_day";
+  if (weatherCode <= 2)
+    return night ? "partly_cloudy_night" : "partly_cloudy_day";
+  if (weatherCode === 3) return "cloudy";
+  if (weatherCode <= 48) return "fog";
+  if (weatherCode <= 55) return "drizzle";
+  if (weatherCode <= 57) return "sleet";
+  if (weatherCode <= 65) return "rain";
+  if (weatherCode <= 67) return "sleet";
+  if (weatherCode <= 77) return "snow";
+  if (weatherCode <= 82) return "rain";
+  if (weatherCode <= 86) return "snow";
+  if (weatherCode >= 95) return "thunderstorm";
+
+  return "default";
 }
