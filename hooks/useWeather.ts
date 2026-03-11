@@ -1,4 +1,4 @@
-import { fetchWeather } from "@/Services/weatherService";
+import { fetchWeather } from "@/services/weatherService";
 import { WeatherResponse } from "@/types/weather";
 import { useEffect, useState } from "react";
 

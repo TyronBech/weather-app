@@ -1,6 +1,6 @@
-import { useState } from 'react';
-import { searchLocation } from '@/Services/geocodingService';
-import { GeocodingResult } from '@/types/geocoding';
+import { searchLocation } from "@/services/geocodingService";
+import { GeocodingResult } from "@/types/geocoding";
+import { useState } from "react";
 
 /**
  * Custom hook to manage geocoding functionality, including searching for locations and handling the results.
