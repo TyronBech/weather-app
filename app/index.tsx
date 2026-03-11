@@ -1,9 +1,10 @@
+import DetailCard from "@/components/DetailCard";
 import WeatherBackground from "@/components/WeatherBackground";
 import WeatherCard from "@/components/WeatherCard";
-import DetailCard from "@/components/DetailCard";
 import { useGeocoding } from "@/hooks/useGeocoding";
 import { useLocation } from "@/hooks/useLocation";
 import { useWeather } from "@/hooks/useWeather";
+import { useWeatherAdvice } from "@/hooks/useWeatherAdvice";
 import { GeocodingResult } from "@/types/geocoding";
 import { Ionicons, MaterialCommunityIcons } from "@expo/vector-icons";
 import { BlurView } from "expo-blur";
@@ -18,11 +19,13 @@ import {
 } from "react-native";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 
+// Format hour label
 function formatHourLabel(value: string) {
   const date = new Date(value);
   return date.toLocaleTimeString([], { hour: "numeric" });
 }
 
+// Main component
 export default function Index() {
   const insets = useSafeAreaInsets();
   const [searchQuery, setSearchQuery] = useState("");
@@ -49,21 +52,44 @@ export default function Index() {
     activeCoordinates?.latitude ?? null,
     activeCoordinates?.longitude ?? null,
   );
-
+  const {
+    advice,
+    loading: adviceLoading,
+    error: adviceError,
+    fetchAdvice,
+  } = useWeatherAdvice();
   useEffect(() => {
     const trimmedQuery = searchQuery.trim();
 
     if (trimmedQuery.length < 2) {
       return;
     }
-
     const timeoutId = setTimeout(() => {
       search(trimmedQuery);
     }, 350);
 
     return () => clearTimeout(timeoutId);
   }, [search, searchQuery]);
+  useEffect(() => {
+    if (!data) return;
 
+    const currentIndex = Math.max(
+      data.hourly.time.findIndex((value) => value >= data.current.time),
+      0,
+    );
+
+    const rainChance =
+      data.hourly.precipitation_probability[currentIndex] ?? 0;
+
+    fetchAdvice({
+      temperature: data.current.temperature_2m,
+      weatherCode: data.current.weather_code,
+      rainChance,
+      windSpeed: data.current.wind_speed_10m,
+      humidity: data.current.relative_humidity_2m,
+      isDay: data.current.is_day,
+    });
+  }, [data, fetchAdvice]);
   const activeCity =
     selectedLocation?.name ??
     locationDetails?.city ??
@@ -128,7 +154,7 @@ export default function Index() {
   }
 
   return (
-    <View className="flex-1" style={{ paddingTop: insets.top }}>
+    <View className="flex-1 " style={{ paddingTop: insets.top, paddingBottom: insets.bottom }}>
       <WeatherBackground
         weatherCode={backgroundWeatherCode}
         isDay={backgroundIsDay}
@@ -257,6 +283,9 @@ export default function Index() {
                     isDay={currentWeather.is_day}
                     humidity={Math.round(currentWeather.relative_humidity_2m)}
                     windSpeed={Math.round(currentWeather.wind_speed_10m)}
+                    advice={advice}
+                    adviceLoading={adviceLoading}
+                    adviceError={adviceError}
                   />
                 </View>
 
