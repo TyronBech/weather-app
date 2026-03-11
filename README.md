@@ -1,50 +1,103 @@
-# Welcome to your Expo app 👋
+# 🌤️ Weather App
 
-This is an [Expo](https://expo.dev) project created with [`create-expo-app`](https://www.npmjs.com/package/create-expo-app).
+A mobile weather application built with **Expo (React Native)**, **TypeScript**, and **Tailwind CSS**. Get real-time weather updates using your device's GPS or search for any location worldwide. Includes AI integration that provides simple, contextual advice based on current weather conditions — with file-based routing via Expo Router.
 
-## Get started
+---
 
-1. Install dependencies
+## ✨ Features
 
-   ```bash
-   npm install
-   ```
+- 📍 **Real-Time Weather via GPS** — Automatically detects your location and fetches live weather data
+- 🔍 **Location Search** — Search for any city or place worldwide
+- 🤖 **AI Weather Advice** — Get simple, context-aware recommendations based on current conditions
+- 🗺️ **File-Based Navigation** — Clean and scalable routing powered by Expo Router
+- 🎨 **Tailwind CSS Styling** — Utility-first UI with NativeWind
 
-2. Start the app
+---
 
-   ```bash
-   npx expo start
-   ```
+## 🛠️ Tech Stack
 
-In the output, you'll find options to open the app in a
+| Technology                | Purpose                            |
+| ------------------------- | ---------------------------------- |
+| Expo                      | Mobile framework and build tooling |
+| React Native              | Cross-platform UI rendering        |
+| TypeScript                | Static typing                      |
+| Tailwind CSS (NativeWind) | Utility-first styling              |
+| Expo Router               | File-based navigation              |
 
-- [development build](https://docs.expo.dev/develop/development-builds/introduction/)
-- [Android emulator](https://docs.expo.dev/workflow/android-studio-emulator/)
-- [iOS simulator](https://docs.expo.dev/workflow/ios-simulator/)
-- [Expo Go](https://expo.dev/go), a limited sandbox for trying out app development with Expo
+---
 
-You can start developing by editing the files inside the **app** directory. This project uses [file-based routing](https://docs.expo.dev/router/introduction).
+## 📁 Project Structure
 
-## Get a fresh project
-
-When you're ready, run:
-
-```bash
-npm run reset-project
+```
+weather-app/
+├── app/                    # Screens and layouts (Expo Router)
+│   ├── _layout.tsx         # Root layout and navigation wrapper
+│   └── index.tsx           # Home screen / weather dashboard
+├── assets/                 # Static assets (images, SVGs)
+├── components/             # Reusable UI components (WeatherCard, WeatherAdvice, etc.)
+├── constants/              # Application constants and configurations mapping
+├── hooks/                  # Custom React hooks (useWeather, useLocation, useGeocoding, etc.)
+├── Services/               # API service integrations (weatherService, geocodingService)
+├── types/                  # TypeScript definitions and interfaces
+├── global.css              # Global Tailwind styles
+├── app.json                # Expo app configuration
+├── babel.config.js         # Babel configuration
+├── metro.config.js         # Metro bundler (NativeWind support)
+├── tailwind.config.js      # Tailwind configuration
+├── tsconfig.json           # TypeScript configuration
+└── package.json            # Dependencies and scripts
 ```
 
-This command will move the starter code to the **app-example** directory and create a blank **app** directory where you can start developing.
+---
 
-## Learn more
+## 🚀 Getting Started
 
-To learn more about developing your project with Expo, look at the following resources:
+### Prerequisites
 
-- [Expo documentation](https://docs.expo.dev/): Learn fundamentals, or go into advanced topics with our [guides](https://docs.expo.dev/guides).
-- [Learn Expo tutorial](https://docs.expo.dev/tutorial/introduction/): Follow a step-by-step tutorial where you'll create a project that runs on Android, iOS, and the web.
+- [Node.js](https://nodejs.org/) (LTS)
+- [Expo CLI](https://docs.expo.dev/get-started/installation/)
+- Android device with [Expo Go](https://expo.dev/go) — or Android Studio emulator
 
-## Join the community
+### Installation
 
-Join our community of developers creating universal apps.
+```bash
+# Clone the repository
+git clone https://github.com/TyronBech/weather-app.git
+cd weather-app
 
-- [Expo on GitHub](https://github.com/expo/expo): View our open source platform and contribute.
-- [Discord community](https://chat.expo.dev): Chat with Expo users and ask questions.
+# Install dependencies
+npm install
+
+# Start the development server
+npx expo start
+```
+
+### Run on Android
+
+```bash
+npx expo start --android
+```
+
+Or scan the QR code in the terminal with **Expo Go** on your Android device.
+
+---
+
+## 🔄 How It Works
+
+```
+App Launch
+    │
+    ▼
+GPS Available? ──── Yes ──► Fetch Coordinates ──► Weather API
+    │                                                   │
+    No                                                  ▼
+    │                                         Display Weather Data
+    ▼                                                   │
+Search Screen ─────────────────────────────────► AI Advice
+```
+
+1. On launch, the app requests location permissions
+2. If granted, GPS coordinates are sent to the weather API
+3. Live weather data is displayed on the dashboard
+4. The AI module reads the weather context and returns plain-language advice
+5. Users can also search manually for any location

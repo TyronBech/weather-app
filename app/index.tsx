@@ -29,6 +29,7 @@ function formatHourLabel(value: string) {
 export default function Index() {
   const insets = useSafeAreaInsets();
   const [searchQuery, setSearchQuery] = useState("");
+  const [showSuggestions, setShowSuggestions] = useState(false);
   const [selectedLocation, setSelectedLocation] =
     useState<GeocodingResult | null>(null);
   const {
@@ -78,8 +79,7 @@ export default function Index() {
       0,
     );
 
-    const rainChance =
-      data.hourly.precipitation_probability[currentIndex] ?? 0;
+    const rainChance = data.hourly.precipitation_probability[currentIndex] ?? 0;
 
     fetchAdvice({
       temperature: data.current.temperature_2m,
@@ -99,7 +99,7 @@ export default function Index() {
     selectedLocation?.country ?? locationDetails?.country ?? "Live";
 
   const shouldShowResults =
-    searchQuery.trim().length >= 2 && results.length > 0;
+    showSuggestions && searchQuery.trim().length >= 2 && results.length > 0;
 
   const hourlyForecast = useMemo(() => {
     if (!data) {
@@ -144,6 +144,7 @@ export default function Index() {
   const currentRainChance = hourlyForecast[0]?.rainChance ?? 0;
   const backgroundWeatherCode = data?.current.weather_code ?? 0;
   const backgroundIsDay = data?.current.is_day ?? 1;
+  const backgroundTime = data?.current.time;
   const currentWeather = data?.current ?? null;
   const hasWeather = Boolean(data);
   const isInitialLoading = locationLoading || weatherLoading;
@@ -151,13 +152,18 @@ export default function Index() {
   function handleLocationSelect(result: GeocodingResult) {
     setSelectedLocation(result);
     setSearchQuery(`${result.name}, ${result.country}`);
+    setShowSuggestions(false);
   }
 
   return (
-    <View className="flex-1 " style={{ paddingTop: insets.top, paddingBottom: insets.bottom }}>
+    <View
+      className="flex-1 "
+      style={{ paddingTop: insets.top, paddingBottom: insets.bottom }}
+    >
       <WeatherBackground
         weatherCode={backgroundWeatherCode}
         isDay={backgroundIsDay}
+        currentTime={backgroundTime}
       >
         <ScrollView
           className="flex-1"
@@ -186,12 +192,12 @@ export default function Index() {
                 </View>
 
                 <BlurView
-                  intensity={24}
-                  tint="light"
-                  className="overflow-hidden rounded-full border border-white/15"
+                  intensity={backgroundIsDay ? 20 : 30}
+                  tint={backgroundIsDay ? "light" : "dark"}
+                  className="overflow-hidden rounded-full border border-white/20 bg-white/5"
                 >
                   <View className="px-4 py-3">
-                    <Text className="text-xs font-semibold uppercase tracking-[2px] text-white/70">
+                    <Text className="text-xs font-semibold uppercase tracking-[2px] text-white/80">
                       {activeCountry}
                     </Text>
                   </View>
@@ -199,9 +205,9 @@ export default function Index() {
               </View>
 
               <BlurView
-                intensity={30}
-                tint="light"
-                className="overflow-hidden rounded-[28px] border border-white/15"
+                intensity={backgroundIsDay ? 20 : 30}
+                tint={backgroundIsDay ? "light" : "dark"}
+                className="overflow-hidden rounded-[28px] border border-white/20 bg-white/5"
               >
                 <View className="flex-row items-center gap-3 px-4 py-4">
                   <Ionicons
@@ -211,7 +217,10 @@ export default function Index() {
                   />
                   <TextInput
                     value={searchQuery}
-                    onChangeText={setSearchQuery}
+                    onChangeText={(text) => {
+                      setSearchQuery(text);
+                      setShowSuggestions(true);
+                    }}
                     placeholder="Search for a location"
                     placeholderTextColor="rgba(255,255,255,0.55)"
                     className="flex-1 text-base font-medium text-white"
@@ -223,9 +232,9 @@ export default function Index() {
 
               {shouldShowResults ? (
                 <BlurView
-                  intensity={30}
-                  tint="light"
-                  className="overflow-hidden rounded-[28px] border border-white/15"
+                  intensity={backgroundIsDay ? 20 : 30}
+                  tint={backgroundIsDay ? "light" : "dark"}
+                  className="overflow-hidden rounded-[28px] border border-white/20 bg-white/5"
                 >
                   <View className="divide-y divide-white/10">
                     {results.map((result) => {
@@ -366,9 +375,9 @@ export default function Index() {
 
             {isInitialLoading && !hasWeather ? (
               <BlurView
-                intensity={26}
-                tint="light"
-                className="overflow-hidden rounded-[28px] border border-white/15"
+                intensity={backgroundIsDay ? 20 : 30}
+                tint={backgroundIsDay ? "light" : "dark"}
+                className="overflow-hidden rounded-[28px] border border-white/20 bg-white/5"
               >
                 <View className="flex-row items-center gap-3 px-5 py-6">
                   <ActivityIndicator color="white" />
@@ -381,9 +390,9 @@ export default function Index() {
 
             {locationError || weatherError || geocodingError ? (
               <BlurView
-                intensity={26}
-                tint="light"
-                className="overflow-hidden rounded-[28px] border border-rose-200/25"
+                intensity={backgroundIsDay ? 20 : 30}
+                tint={backgroundIsDay ? "light" : "dark"}
+                className="overflow-hidden rounded-[28px] border border-rose-200/30 bg-rose-500/10"
               >
                 <View className="gap-2 px-5 py-5">
                   <Text className="text-sm font-semibold uppercase tracking-[2px] text-rose-100">

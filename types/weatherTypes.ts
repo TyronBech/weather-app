@@ -46,5 +46,6 @@ export interface WeatherCodeEntry {
 export interface WeatherBackgroundProps {
   weatherCode: number;
   isDay: 0 | 1;
+  currentTime?: string;
   children: React.ReactNode;
 }

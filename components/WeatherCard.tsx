@@ -60,8 +60,8 @@ export default function WeatherCard({
   if (isMain) {
     return (
       <BlurView
-        intensity={40}
-        tint="light"
+        intensity={isDay === 0 ? 30 : 40}
+        tint={isDay === 0 ? "dark" : "light"}
         className={`rounded-[32px] overflow-hidden border border-white/20 ${className}`}
         style={style}
       >
@@ -142,9 +142,9 @@ export default function WeatherCard({
   // ─── Hourly variant ───────────────────────────────────────────────────────
   return (
     <BlurView
-      intensity={30}
-      tint="light"
-      className={`rounded-3xl overflow-hidden border border-white/[0.18] w-[90px] ${className}`}
+      intensity={isDay === 0 ? 30 : 40}
+      tint={isDay === 0 ? "dark" : "light"}
+      className={`rounded-3xl overflow-hidden border border-white/20 bg-white/5 w-[90px] ${className}`}
       style={style}
     >
       {/* Shimmer overlay */}
