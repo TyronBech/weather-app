@@ -1,6 +1,13 @@
 /**
  * Array of test scenarios for the WeatherCard component.
  */
+export type TestScenario = {
+  label: string;
+  code: number | null;
+  isDay: 0 | 1 | null;
+  time: string | null;
+};
+
 export const TEST_SCENARIOS = [
   { label: "Reset (Real Weather)", code: null, isDay: null, time: null },
   { label: "Clear Day", code: 0, isDay: 1, time: "2024-01-01T12:00" },
@@ -23,4 +30,4 @@ export const TEST_SCENARIOS = [
   { label: "Heavy Snow", code: 75, isDay: 1, time: "2024-01-01T12:00" },
   { label: "Thunderstorm", code: 95, isDay: 1, time: "2024-01-01T12:00" },
   { label: "Heavy Thunderstorm", code: 96, isDay: 1, time: "2024-01-01T12:00" },
-];
+] as const satisfies ReadonlyArray<TestScenario>;
