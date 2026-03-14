@@ -49,3 +49,18 @@ export interface WeatherBackgroundProps {
   currentTime?: string;
   children: React.ReactNode;
 }
+
+/**
+ * Props for the ThemeTester component, which provides a UI for testing different weather scenarios
+ * by allowing users to select various weather codes, day/night settings, and times. The onSelect
+ * callback is triggered when a scenario is selected, passing the corresponding weather code,
+ * day/night value, and time to the parent component for testing purposes.
+ */
+export type ThemeTesterProps = {
+  visible?: boolean;
+  onSelect: (
+    weatherCode: number | null,
+    isDay: 0 | 1 | null,
+    time: string | null,
+  ) => void;
+};

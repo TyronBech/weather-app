@@ -150,7 +150,8 @@ export default function Index() {
   }, [data]);
 
   const currentRainChance = hourlyForecast[0]?.rainChance ?? 0;
-  const backgroundWeatherCode = overrideWeatherCode ?? data?.current.weather_code ?? 0;
+  const backgroundWeatherCode =
+    overrideWeatherCode ?? data?.current.weather_code ?? 0;
   const backgroundIsDay = overrideIsDay ?? data?.current.is_day ?? 1;
   const backgroundTime = overrideTime ?? data?.current.time;
   const currentWeather = data?.current ?? null;
@@ -428,6 +429,7 @@ export default function Index() {
         </ScrollView>
       </WeatherBackground>
       <ThemeTester
+        visible={true} /* Set to false to hide the testing button */
         onSelect={(code, isDay, time) => {
           setOverrideWeatherCode(code);
           setOverrideIsDay(isDay);
