@@ -64,3 +64,15 @@ export type ThemeTesterProps = {
     time: string | null,
   ) => void;
 };
+
+/**
+ * Type definition for a test scenario used in the ThemeTester component, which includes a label for the scenario, 
+ * a weather code, a day/night indicator, and a time string. This type is used to define the structure of 
+ * each test scenario in the TEST_SCENARIOS array.
+ */
+export type TestScenario = {
+  label: string;
+  code: number | null;
+  isDay: 0 | 1 | null;
+  time: string | null;
+};
