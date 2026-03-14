@@ -429,7 +429,7 @@ export default function Index() {
         </ScrollView>
       </WeatherBackground>
       <ThemeTester
-        visible={true} /* Set to false to hide the testing button */
+        visible={__DEV__} /* Only show the testing button in development */
         onSelect={(code, isDay, time) => {
           setOverrideWeatherCode(code);
           setOverrideIsDay(isDay);
