@@ -1,4 +1,5 @@
 import DetailCard from "@/components/DetailCard";
+import ThemeTester from "@/components/ThemeTester";
 import WeatherBackground from "@/components/WeatherBackground";
 import WeatherCard from "@/components/WeatherCard";
 import { useGeocoding } from "@/hooks/useGeocoding";
@@ -32,6 +33,13 @@ export default function Index() {
   const [showSuggestions, setShowSuggestions] = useState(false);
   const [selectedLocation, setSelectedLocation] =
     useState<GeocodingResult | null>(null);
+
+  // Theme Overrides
+  const [overrideWeatherCode, setOverrideWeatherCode] = useState<number | null>(
+    null,
+  );
+  const [overrideIsDay, setOverrideIsDay] = useState<0 | 1 | null>(null);
+  const [overrideTime, setOverrideTime] = useState<string | null>(null);
   const {
     coordinates,
     locationDetails,
@@ -142,9 +150,10 @@ export default function Index() {
   }, [data]);
 
   const currentRainChance = hourlyForecast[0]?.rainChance ?? 0;
-  const backgroundWeatherCode = data?.current.weather_code ?? 0;
-  const backgroundIsDay = data?.current.is_day ?? 1;
-  const backgroundTime = data?.current.time;
+  const backgroundWeatherCode =
+    overrideWeatherCode ?? data?.current.weather_code ?? 0;
+  const backgroundIsDay = overrideIsDay ?? data?.current.is_day ?? 1;
+  const backgroundTime = overrideTime ?? data?.current.time;
   const currentWeather = data?.current ?? null;
   const hasWeather = Boolean(data);
   const isInitialLoading = locationLoading || weatherLoading;
@@ -288,8 +297,8 @@ export default function Index() {
                     country={activeCountry}
                     temperature={Math.round(currentWeather.temperature_2m)}
                     feelsLike={Math.round(currentWeather.apparent_temperature)}
-                    weatherCode={currentWeather.weather_code}
-                    isDay={currentWeather.is_day}
+                    weatherCode={backgroundWeatherCode}
+                    isDay={backgroundIsDay as 0 | 1}
                     humidity={Math.round(currentWeather.relative_humidity_2m)}
                     windSpeed={Math.round(currentWeather.wind_speed_10m)}
                     advice={advice}
@@ -419,6 +428,14 @@ export default function Index() {
           </View>
         </ScrollView>
       </WeatherBackground>
+      <ThemeTester
+        visible={__DEV__} /* Only show the testing button in development */
+        onSelect={(code, isDay, time) => {
+          setOverrideWeatherCode(code);
+          setOverrideIsDay(isDay);
+          setOverrideTime(time);
+        }}
+      />
     </View>
   );
 }

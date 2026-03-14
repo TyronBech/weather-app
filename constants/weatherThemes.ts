@@ -15,12 +15,12 @@ export interface WeatherTheme {
 export const WEATHER_THEMES: Record<string, WeatherTheme> = {
   // ── Clear Day ─────────────────────────────────────────────────
   clear_day: {
-    gradientColors: ["#0A84FF", "#30B0FF", "#74c3f7", "#B6DEF7"],
+    gradientColors: ["#005BEA", "#0099FF", "#3FA9F5", "#80D0C7"],
     blobColors: [
-      "rgba(255, 230, 100, 0.4)",
-      "rgba(255, 180, 50, 0.3)",
-      "rgba(255, 255, 255, 0.2)",
-      "rgba(100, 200, 255, 0.3)",
+      "rgba(255, 230, 100, 0.3)",
+      "rgba(255, 180, 50, 0.2)",
+      "rgba(255, 255, 255, 0.15)",
+      "rgba(50, 150, 255, 0.3)",
     ],
     statusBarStyle: "light",
   },
@@ -37,14 +37,38 @@ export const WEATHER_THEMES: Record<string, WeatherTheme> = {
     statusBarStyle: "light",
   },
 
+  // ── Mostly Clear Day ──────────────────────────────────────────
+  mostly_clear_day: {
+    gradientColors: ["#0B71DA", "#1E8BE8", "#5AB0F5", "#98CEF5"],
+    blobColors: [
+      "rgba(255, 240, 150, 0.25)",
+      "rgba(255, 200, 100, 0.15)",
+      "rgba(255, 255, 255, 0.2)",
+      "rgba(80, 160, 255, 0.25)",
+    ],
+    statusBarStyle: "light",
+  },
+
+  // ── Mostly Clear Night ────────────────────────────────────────
+  mostly_clear_night: {
+    gradientColors: ["#0B1224", "#182038", "#232647", "#2D3054"],
+    blobColors: [
+      "rgba(150, 170, 255, 0.2)",
+      "rgba(110, 120, 255, 0.15)",
+      "rgba(150, 120, 255, 0.1)",
+      "rgba(70, 70, 120, 0.15)",
+    ],
+    statusBarStyle: "light",
+  },
+
   // ── Mostly / Partly Cloudy Day ────────────────────────────────
   partly_cloudy_day: {
-    gradientColors: ["#3A8FBF", "#5CADD6", "#89C4E1", "#BFE0F0"],
+    gradientColors: ["#1976D2", "#42A5F5", "#90CAF9", "#E3F2FD"],
     blobColors: [
       "rgba(255, 255, 255, 0.3)",
-      "rgba(255, 240, 200, 0.2)",
-      "rgba(200, 230, 255, 0.25)",
-      "rgba(150, 210, 255, 0.2)",
+      "rgba(200, 230, 255, 0.2)",
+      "rgba(150, 210, 255, 0.25)",
+      "rgba(100, 180, 255, 0.2)",
     ],
     statusBarStyle: "light",
   },
@@ -145,6 +169,30 @@ export const WEATHER_THEMES: Record<string, WeatherTheme> = {
     statusBarStyle: "light",
   },
 
+  // ── Showers ───────────────────────────────────────────────────
+  showers: {
+    gradientColors: ["#234B70", "#33618A", "#4B7DA8", "#6499C4"],
+    blobColors: [
+      "rgba(120, 180, 240, 0.2)",
+      "rgba(100, 160, 220, 0.15)",
+      "rgba(80, 130, 190, 0.2)",
+      "rgba(50, 100, 160, 0.1)",
+    ],
+    statusBarStyle: "light",
+  },
+
+  // ── Freezing Rain ─────────────────────────────────────────────
+  freezing_rain: {
+    gradientColors: ["#233040", "#314559", "#445C73", "#5C7891"],
+    blobColors: [
+      "rgba(180, 210, 230, 0.2)",
+      "rgba(150, 180, 210, 0.15)",
+      "rgba(130, 160, 190, 0.15)",
+      "rgba(110, 140, 170, 0.1)",
+    ],
+    statusBarStyle: "light",
+  },
+
   // ── Snow ──────────────────────────────────────────────────────
   snow: {
     gradientColors: ["#3A5070", "#5B7699", "#8CA8C2", "#BBCFE0"],
@@ -157,6 +205,18 @@ export const WEATHER_THEMES: Record<string, WeatherTheme> = {
     statusBarStyle: "light",
   },
 
+  // ── Heavy Snow ────────────────────────────────────────────────
+  heavy_snow: {
+    gradientColors: ["#2B3B52", "#445A77", "#6A84A1", "#96AFCC"],
+    blobColors: [
+      "rgba(230, 240, 255, 0.3)",
+      "rgba(200, 220, 245, 0.25)",
+      "rgba(180, 200, 230, 0.2)",
+      "rgba(150, 180, 210, 0.15)",
+    ],
+    statusBarStyle: "light",
+  },
+
   // ── Thunderstorm ──────────────────────────────────────────────
   thunderstorm: {
     gradientColors: ["#131022", "#221F38", "#342D52", "#4B426D"],
@@ -165,6 +225,18 @@ export const WEATHER_THEMES: Record<string, WeatherTheme> = {
       "rgba(100, 80, 220, 0.15)",
       "rgba(255, 230, 100, 0.1)",
       "rgba(120, 60, 200, 0.2)",
+    ],
+    statusBarStyle: "light",
+  },
+
+  // ── Heavy Thunderstorm / Hail ─────────────────────────────────
+  heavy_thunderstorm: {
+    gradientColors: ["#0B0914", "#151224", "#241D3A", "#352B52"],
+    blobColors: [
+      "rgba(255, 200, 100, 0.15)",
+      "rgba(120, 90, 240, 0.2)",
+      "rgba(80, 60, 180, 0.15)",
+      "rgba(200, 220, 240, 0.1)",
     ],
     statusBarStyle: "light",
   },
@@ -212,8 +284,14 @@ export function getWeatherThemeKey(
         ? currentTime.indexOf("T")
         : currentTime.indexOf(" ");
     let hour = NaN;
-    if (timeSeparatorIndex !== -1 && currentTime.length > timeSeparatorIndex + 2) {
-      const hourString = currentTime.substring(timeSeparatorIndex + 1, timeSeparatorIndex + 3);
+    if (
+      timeSeparatorIndex !== -1 &&
+      currentTime.length > timeSeparatorIndex + 2
+    ) {
+      const hourString = currentTime.substring(
+        timeSeparatorIndex + 1,
+        timeSeparatorIndex + 3,
+      );
       hour = parseInt(hourString, 10);
     }
     if (!Number.isNaN(hour)) {
@@ -225,18 +303,31 @@ export function getWeatherThemeKey(
   }
 
   if (weatherCode === 0) return night ? "clear_night" : "clear_day";
-  if (weatherCode <= 2)
+  if (weatherCode === 1)
+    return night ? "mostly_clear_night" : "mostly_clear_day";
+  if (weatherCode === 2)
     return night ? "partly_cloudy_night" : "partly_cloudy_day";
   if (weatherCode === 3) return "cloudy";
   if (weatherCode <= 48) return "fog";
+
   if (weatherCode <= 55) return "drizzle";
-  if (weatherCode <= 57) return "sleet";
-  if (weatherCode <= 65) return "rain";
-  if (weatherCode <= 67) return "sleet";
-  if (weatherCode <= 77) return "snow";
-  if (weatherCode <= 82) return "rain";
-  if (weatherCode <= 86) return "snow";
-  if (weatherCode >= 95) return "thunderstorm";
+  if (weatherCode <= 57) return "sleet"; // Freezing drizzle
+
+  if (weatherCode < 61) return "drizzle"; // Light rain (61 is treated as rain)
+  if (weatherCode <= 63) return "rain"; // Moderate rain (includes 61: light rain and 63: moderate rain)
+  if (weatherCode === 65) return "heavy_rain";
+  if (weatherCode <= 67) return "freezing_rain";
+
+  if (weatherCode <= 73) return "snow"; // Light/Moderate snow
+  if (weatherCode === 75) return "heavy_snow";
+  if (weatherCode === 77) return "snow"; // Snow grains
+
+  if (weatherCode <= 81) return "showers"; // Light/Moderate showers
+  if (weatherCode === 82) return "heavy_rain"; // Heavy showers
+  if (weatherCode <= 86) return "snow"; // Snow showers
+
+  if (weatherCode === 95) return "thunderstorm";
+  if (weatherCode >= 96) return "heavy_thunderstorm";
 
   return "default";
 }
