@@ -43,24 +43,33 @@ export default function ThemeTester({
             </View>
             <ScrollView showsVerticalScrollIndicator={false}>
               <View className="gap-3 pb-10">
-                {TEST_SCENARIOS.map((scenario) => (
-                  <Pressable
-                    key={scenario.label}
-                    onPress={() => {
-                      onSelect(
-                        scenario.code,
-                        scenario.isDay as 0 | 1 | null,
-                        scenario.time,
-                      );
-                      setModalVisible(false);
-                    }}
-                    className="rounded-xl border border-white/5 bg-white/10 p-4 active:bg-white/20"
-                  >
-                    <Text className="text-base font-medium text-white">
-                      {scenario.label}
-                    </Text>
-                  </Pressable>
-                ))}
+                {TEST_SCENARIOS.map(
+                  (
+                    scenario: {
+                      label: string;
+                      code: string;
+                      isDay: 0 | 1 | null;
+                      time: string;
+                    },
+                  ) => (
+                    <Pressable
+                      key={scenario.label}
+                      onPress={() => {
+                        onSelect(
+                          scenario.code,
+                          scenario.isDay,
+                          scenario.time,
+                        );
+                        setModalVisible(false);
+                      }}
+                      className="rounded-xl border border-white/5 bg-white/10 p-4 active:bg-white/20"
+                    >
+                      <Text className="text-base font-medium text-white">
+                        {scenario.label}
+                      </Text>
+                    </Pressable>
+                  ),
+                )}
               </View>
             </ScrollView>
           </View>
