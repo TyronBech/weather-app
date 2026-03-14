@@ -313,8 +313,8 @@ export function getWeatherThemeKey(
   if (weatherCode <= 55) return "drizzle";
   if (weatherCode <= 57) return "sleet"; // Freezing drizzle
 
-  if (weatherCode <= 61) return "drizzle"; // Light rain
-  if (weatherCode <= 63) return "rain"; // Moderate rain
+  if (weatherCode < 61) return "drizzle"; // Light rain (61 is treated as rain)
+  if (weatherCode <= 63) return "rain"; // Moderate rain (includes 61: light rain and 63: moderate rain)
   if (weatherCode === 65) return "heavy_rain";
   if (weatherCode <= 67) return "freezing_rain";
 
