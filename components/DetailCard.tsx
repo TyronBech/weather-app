@@ -25,9 +25,9 @@ export default function DetailCard({
 }): JSX.Element {
   return (
     <BlurView
-      intensity={30}
-      tint="default"
-      className="w-[48%] overflow-hidden rounded-[24px] border border-white/20 bg-white/5"
+      intensity={50}
+      tint="dark"
+      className="w-[48%] overflow-hidden rounded-[24px] border border-white/20 bg-black/10"
     >
       <View className="gap-3 p-4">
         <View className="h-10 w-10 items-center justify-center rounded-2xl bg-white/15">
