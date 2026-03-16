@@ -122,6 +122,8 @@ export default function Index() {
     return data.hourly.time
       .slice(startIndex, startIndex + 24)
       .map((time, index) => ({
+        isDay: (data.hourly.is_day[startIndex + index] ??
+          data.current.is_day) as 0 | 1,
         time,
         temperature: Math.round(
           data.hourly.temperature_2m[startIndex + index] ?? 0,
@@ -328,7 +330,7 @@ export default function Index() {
                           temperature={entry.temperature}
                           weatherCode={entry.weatherCode}
                           humidity={entry.humidity}
-                          isDay={currentWeather.is_day}
+                          isDay={entry.isDay}
                           time={formatHourLabel(entry.time)}
                         />
                       ))}
