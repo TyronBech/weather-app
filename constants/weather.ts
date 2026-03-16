@@ -5,6 +5,6 @@ export const DEFAULT_WEATHER_PARAMS = {
   current:
     "temperature_2m,relative_humidity_2m,apparent_temperature,is_day,precipitation,weather_code,wind_speed_10m,surface_pressure",
   hourly:
-    "temperature_2m,weather_code,relative_humidity_2m,precipitation_probability",
+    "temperature_2m,weather_code,relative_humidity_2m,precipitation_probability,is_day",
   timezone: "auto",
 };

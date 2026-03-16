@@ -18,6 +18,7 @@ export interface HourlyWeather {
   weather_code: number[];
   relative_humidity_2m: number[];
   precipitation_probability: number[];
+  is_day: (0 | 1)[];
 }
 
 // This is a simplified version of the Open-Meteo API response.
