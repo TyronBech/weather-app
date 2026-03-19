@@ -9,10 +9,11 @@ import { useWeatherAdvice } from "@/hooks/useWeatherAdvice";
 import { GeocodingResult } from "@/types/geocoding";
 import { Ionicons, MaterialCommunityIcons } from "@expo/vector-icons";
 import { BlurView } from "expo-blur";
-import { useEffect, useMemo, useState } from "react";
+import { useCallback, useEffect, useMemo, useState } from "react";
 import {
   ActivityIndicator,
   Pressable,
+  RefreshControl,
   ScrollView,
   Text,
   TextInput,
@@ -40,11 +41,13 @@ export default function Index() {
   );
   const [overrideIsDay, setOverrideIsDay] = useState<0 | 1 | null>(null);
   const [overrideTime, setOverrideTime] = useState<string | null>(null);
+  const [refreshing, setRefreshing] = useState(false);
   const {
     coordinates,
     locationDetails,
     loading: locationLoading,
     error: locationError,
+    refetch: refetchLocation,
   } = useLocation();
   const { results, error: geocodingError, search } = useGeocoding();
   const activeCoordinates = selectedLocation
@@ -57,6 +60,7 @@ export default function Index() {
     data,
     loading: weatherLoading,
     error: weatherError,
+    refetch: refetchWeather,
   } = useWeather(
     activeCoordinates?.latitude ?? null,
     activeCoordinates?.longitude ?? null,
@@ -160,6 +164,24 @@ export default function Index() {
   const hasWeather = Boolean(data);
   const isInitialLoading = locationLoading || weatherLoading;
 
+  const handleRefresh = useCallback(async () => {
+    setRefreshing(true);
+
+    try {
+      if (selectedLocation) {
+        await refetchWeather();
+        return;
+      }
+
+      const nextCoordinates = await refetchLocation();
+      if (nextCoordinates) {
+        await refetchWeather(nextCoordinates.latitude, nextCoordinates.longitude);
+      }
+    } finally {
+      setRefreshing(false);
+    }
+  }, [refetchLocation, refetchWeather, selectedLocation]);
+
   function handleLocationSelect(result: GeocodingResult) {
     setSelectedLocation(result);
     setSearchQuery(`${result.name}, ${result.country}`);
@@ -180,6 +202,13 @@ export default function Index() {
           className="flex-1"
           contentContainerStyle={{ paddingHorizontal: 20, paddingBottom: 40 }}
           showsVerticalScrollIndicator={false}
+          refreshControl={
+            <RefreshControl
+              refreshing={refreshing}
+              onRefresh={handleRefresh}
+              tintColor="#ffffff"
+            />
+          }
         >
           <View className="gap-6 pt-4">
             <View className="gap-4">

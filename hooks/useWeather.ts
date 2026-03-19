@@ -1,6 +1,6 @@
 import { fetchWeather } from "@/services/weatherService";
 import { WeatherResponse } from "@/types/weather";
-import { useEffect, useState } from "react";
+import { useCallback, useEffect, useRef, useState } from "react";
 
 /**
  *  Custom hook to fetch weather data based on latitude and longitude. It manages the loading state, error handling, and stores the fetched weather data.
@@ -12,35 +12,53 @@ export function useWeather(latitude: number | null, longitude: number | null) {
   const [data, setData] = useState<WeatherResponse | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
+  const isMountedRef = useRef(true);
+
+  const refetch = useCallback(
+    async (nextLatitude = latitude, nextLongitude = longitude) => {
+      if (nextLatitude == null || nextLongitude == null) {
+        if (isMountedRef.current) {
+          setData(null);
+          setLoading(false);
+          setError(null);
+        }
+        return;
+      }
+
+      if (isMountedRef.current) {
+        setLoading(true);
+        setError(null);
+      }
+
+      try {
+        const result = await fetchWeather(nextLatitude, nextLongitude);
+        if (isMountedRef.current) {
+          setData(result);
+        }
+      } catch (err) {
+        if (isMountedRef.current) {
+          setError(err instanceof Error ? err.message : String(err));
+        }
+      } finally {
+        if (isMountedRef.current) {
+          setLoading(false);
+        }
+      }
+    },
+    [latitude, longitude],
+  );
 
   useEffect(() => {
-    if (latitude == null || longitude == null) {
-      setData(null);
-      setLoading(false);
-      setError(null);
-      return;
-    }
+    refetch();
+  }, [refetch]);
 
-    let didCancel = false;
-
-    setLoading(true);
-    setError(null);
-    fetchWeather(latitude, longitude)
-      .then((result) => {
-        if (!didCancel) setData(result);
-      })
-      .catch((err) => {
-        if (!didCancel)
-          setError(err instanceof Error ? err.message : String(err));
-      })
-      .finally(() => {
-        if (!didCancel) setLoading(false);
-      });
+  useEffect(() => {
+    isMountedRef.current = true;
 
     return () => {
-      didCancel = true;
+      isMountedRef.current = false;
     };
-  }, [latitude, longitude]);
+  }, []);
 
-  return { data, loading, error };
+  return { data, loading, error, refetch };
 }
