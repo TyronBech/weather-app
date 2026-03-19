@@ -13,11 +13,14 @@ export function useWeather(latitude: number | null, longitude: number | null) {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const isMountedRef = useRef(true);
+  const requestIdRef = useRef(0);
 
   const refetch = useCallback(
     async (nextLatitude = latitude, nextLongitude = longitude) => {
+      const currentRequestId = ++requestIdRef.current;
+
       if (nextLatitude == null || nextLongitude == null) {
-        if (isMountedRef.current) {
+        if (isMountedRef.current && currentRequestId === requestIdRef.current) {
           setData(null);
           setLoading(false);
           setError(null);
@@ -25,22 +28,22 @@ export function useWeather(latitude: number | null, longitude: number | null) {
         return;
       }
 
-      if (isMountedRef.current) {
+      if (isMountedRef.current && currentRequestId === requestIdRef.current) {
         setLoading(true);
         setError(null);
       }
 
       try {
         const result = await fetchWeather(nextLatitude, nextLongitude);
-        if (isMountedRef.current) {
+        if (isMountedRef.current && currentRequestId === requestIdRef.current) {
           setData(result);
         }
       } catch (err) {
-        if (isMountedRef.current) {
+        if (isMountedRef.current && currentRequestId === requestIdRef.current) {
           setError(err instanceof Error ? err.message : String(err));
         }
       } finally {
-        if (isMountedRef.current) {
+        if (isMountedRef.current && currentRequestId === requestIdRef.current) {
           setLoading(false);
         }
       }
