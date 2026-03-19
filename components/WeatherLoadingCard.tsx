@@ -76,7 +76,7 @@ export default function WeatherLoadingCard({
     : "Gathering your location, live conditions, and the next sky update.";
   const defaultSteps = isInline
     ? []
-    : ["Locating", "Syncing forecast", "Styling the sky"];
+    : ["Syncing forecast"];
 
   return (
     <BlurView
