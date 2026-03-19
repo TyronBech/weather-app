@@ -1,6 +1,7 @@
 import { MaterialCommunityIcons } from "@expo/vector-icons";
-import { ActivityIndicator, Text, View } from "react-native";
+import { Text, View } from "react-native";
 import { WeatherAdviceProps } from "@/types/weatherAdvice";
+import WeatherLoadingCard from "./WeatherLoadingCard";
 
 
 /**
@@ -40,10 +41,11 @@ export default function WeatherAdvice({ advice, loading, error }: WeatherAdviceP
 
         {/* Loading */}
         {loading && (
-          <View className="flex-row items-center gap-2.5 bg-white/[0.05] rounded-xl px-3 py-3">
-            <ActivityIndicator size="small" color="rgba(255,255,255,0.5)" />
-            <Text className="text-sm text-white/45 italic">Analyzing conditions...</Text>
-          </View>
+          <WeatherLoadingCard
+            variant="inline"
+            title="Preparing AI advice"
+            message="Reading the current sky and shaping a quick recommendation."
+          />
         )}
 
         {/* Advice */}
