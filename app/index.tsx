@@ -2,7 +2,7 @@ import DetailCard from "@/components/DetailCard";
 import ThemeTester from "@/components/ThemeTester";
 import WeatherBackground from "@/components/WeatherBackground";
 import WeatherCard from "@/components/WeatherCard";
-import WeatherLoadingCard from "../components/WeatherLoadingCard";
+import WeatherLoadingCard from "@/components/WeatherLoadingCard";
 import { useGeocoding } from "@/hooks/useGeocoding";
 import { useLocation } from "@/hooks/useLocation";
 import { useWeather } from "@/hooks/useWeather";
