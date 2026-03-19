@@ -17,16 +17,19 @@ export function useLocation() {
   const [locationDetails, setLocationDetails] =
     useState<LocationDetails | null>(null);
   const isMountedRef = useRef(true);
+  const requestIdRef = useRef(0);
 
   const refetch = useCallback(async () => {
     if (!isMountedRef.current) return;
+
+    const requestId = ++requestIdRef.current;
 
     setLoading(true);
     setError(null);
 
     try {
       const { status } = await Location.requestForegroundPermissionsAsync();
-      if (!isMountedRef.current) return;
+      if (!isMountedRef.current || requestId !== requestIdRef.current) return;
 
       if (status !== "granted") {
         setError("Permission to access location was denied");
@@ -34,7 +37,7 @@ export function useLocation() {
       }
 
       const loc = await Location.getCurrentPositionAsync({});
-      if (!isMountedRef.current) return;
+      if (!isMountedRef.current || requestId !== requestIdRef.current) return;
 
       const { latitude, longitude } = loc.coords;
       setCoordinates({ latitude, longitude });
@@ -43,7 +46,7 @@ export function useLocation() {
         latitude,
         longitude,
       });
-      if (!isMountedRef.current) return;
+      if (!isMountedRef.current || requestId !== requestIdRef.current) return;
 
       if (place) {
         setLocationDetails({
@@ -55,11 +58,11 @@ export function useLocation() {
 
       return { latitude, longitude };
     } catch (err) {
-      if (isMountedRef.current) {
+      if (isMountedRef.current && requestId === requestIdRef.current) {
         setError(err instanceof Error ? err.message : String(err));
       }
     } finally {
-      if (isMountedRef.current) {
+      if (isMountedRef.current && requestId === requestIdRef.current) {
         setLoading(false);
       }
     }
