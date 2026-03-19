@@ -2,6 +2,7 @@ import DetailCard from "@/components/DetailCard";
 import ThemeTester from "@/components/ThemeTester";
 import WeatherBackground from "@/components/WeatherBackground";
 import WeatherCard from "@/components/WeatherCard";
+import WeatherLoadingCard from "../components/WeatherLoadingCard";
 import { useGeocoding } from "@/hooks/useGeocoding";
 import { useLocation } from "@/hooks/useLocation";
 import { useWeather } from "@/hooks/useWeather";
@@ -11,7 +12,7 @@ import { Ionicons, MaterialCommunityIcons } from "@expo/vector-icons";
 import { BlurView } from "expo-blur";
 import { useCallback, useEffect, useMemo, useState } from "react";
 import {
-  ActivityIndicator,
+  Animated,
   Pressable,
   RefreshControl,
   ScrollView,
@@ -42,6 +43,8 @@ export default function Index() {
   const [overrideIsDay, setOverrideIsDay] = useState<0 | 1 | null>(null);
   const [overrideTime, setOverrideTime] = useState<string | null>(null);
   const [refreshing, setRefreshing] = useState(false);
+  const [showRefreshBanner, setShowRefreshBanner] = useState(false);
+  const [refreshBannerProgress] = useState(() => new Animated.Value(0));
   const {
     coordinates,
     locationDetails,
@@ -164,6 +167,30 @@ export default function Index() {
   const hasWeather = Boolean(data);
   const isInitialLoading = locationLoading || weatherLoading;
 
+  useEffect(() => {
+    if (refreshing) {
+      setShowRefreshBanner(true);
+      Animated.spring(refreshBannerProgress, {
+        toValue: 1,
+        damping: 16,
+        mass: 0.8,
+        stiffness: 180,
+        useNativeDriver: true,
+      }).start();
+      return;
+    }
+
+    Animated.timing(refreshBannerProgress, {
+      toValue: 0,
+      duration: 220,
+      useNativeDriver: true,
+    }).start(({ finished }) => {
+      if (finished) {
+        setShowRefreshBanner(false);
+      }
+    });
+  }, [refreshBannerProgress, refreshing]);
+
   const handleRefresh = useCallback(async () => {
     setRefreshing(true);
 
@@ -211,6 +238,34 @@ export default function Index() {
           }
         >
           <View className="gap-6 pt-4">
+            {showRefreshBanner ? (
+              <Animated.View
+                style={{
+                  opacity: refreshBannerProgress,
+                  transform: [
+                    {
+                      translateY: refreshBannerProgress.interpolate({
+                        inputRange: [0, 1],
+                        outputRange: [-18, 0],
+                      }),
+                    },
+                    {
+                      scale: refreshBannerProgress.interpolate({
+                        inputRange: [0, 1],
+                        outputRange: [0.96, 1],
+                      }),
+                    },
+                  ],
+                }}
+              >
+                <WeatherLoadingCard
+                  variant="inline"
+                  title="Refreshing forecast"
+                  message="Updating the sky, temperature, and local conditions."
+                />
+              </Animated.View>
+            ) : null}
+
             <View className="gap-4">
               <View className="flex-row items-center justify-between">
                 <View className="flex-row items-center gap-3">
@@ -414,18 +469,10 @@ export default function Index() {
             ) : null}
 
             {isInitialLoading && !hasWeather ? (
-              <BlurView
-                intensity={backgroundIsDay ? 20 : 30}
-                tint={backgroundIsDay ? "light" : "dark"}
-                className="overflow-hidden rounded-[28px] border border-white/20 bg-white/5"
-              >
-                <View className="flex-row items-center gap-3 px-5 py-6">
-                  <ActivityIndicator color="white" />
-                  <Text className="text-base text-white/80">
-                    Loading the latest weather...
-                  </Text>
-                </View>
-              </BlurView>
+              <WeatherLoadingCard
+                title="Loading the latest weather"
+                message="Pulling your location, current conditions, and a fresh forecast into view."
+              />
             ) : null}
 
             {locationError || weatherError || geocodingError ? (
