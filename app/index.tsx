@@ -2,6 +2,7 @@ import DetailCard from "@/components/DetailCard";
 import ThemeTester from "@/components/ThemeTester";
 import WeatherBackground from "@/components/WeatherBackground";
 import WeatherCard from "@/components/WeatherCard";
+import WeatherLoadingCard from "@/components/WeatherLoadingCard";
 import { useGeocoding } from "@/hooks/useGeocoding";
 import { useLocation } from "@/hooks/useLocation";
 import { useWeather } from "@/hooks/useWeather";
@@ -9,10 +10,11 @@ import { useWeatherAdvice } from "@/hooks/useWeatherAdvice";
 import { GeocodingResult } from "@/types/geocoding";
 import { Ionicons, MaterialCommunityIcons } from "@expo/vector-icons";
 import { BlurView } from "expo-blur";
-import { useEffect, useMemo, useState } from "react";
+import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import {
-  ActivityIndicator,
+  Animated,
   Pressable,
+  RefreshControl,
   ScrollView,
   Text,
   TextInput,
@@ -40,11 +42,23 @@ export default function Index() {
   );
   const [overrideIsDay, setOverrideIsDay] = useState<0 | 1 | null>(null);
   const [overrideTime, setOverrideTime] = useState<string | null>(null);
+
+  // Refresh state
+  const [refreshing, setRefreshing] = useState(false);
+  const [showRefreshBanner, setShowRefreshBanner] = useState(false);
+  const [refreshBannerProgress] = useState(() => new Animated.Value(0));
+
+  // Pull-to-peek state
+  const scrollYRef = useRef(0);
+  const [isPulling, setIsPulling] = useState(false);
+  const [peekProgress] = useState(() => new Animated.Value(0));
+
   const {
     coordinates,
     locationDetails,
     loading: locationLoading,
     error: locationError,
+    refetch: refetchLocation,
   } = useLocation();
   const { results, error: geocodingError, search } = useGeocoding();
   const activeCoordinates = selectedLocation
@@ -57,6 +71,7 @@ export default function Index() {
     data,
     loading: weatherLoading,
     error: weatherError,
+    refetch: refetchWeather,
   } = useWeather(
     activeCoordinates?.latitude ?? null,
     activeCoordinates?.longitude ?? null,
@@ -67,28 +82,23 @@ export default function Index() {
     error: adviceError,
     fetchAdvice,
   } = useWeatherAdvice();
+
   useEffect(() => {
     const trimmedQuery = searchQuery.trim();
-
-    if (trimmedQuery.length < 2) {
-      return;
-    }
+    if (trimmedQuery.length < 2) return;
     const timeoutId = setTimeout(() => {
       search(trimmedQuery);
     }, 350);
-
     return () => clearTimeout(timeoutId);
   }, [search, searchQuery]);
+
   useEffect(() => {
     if (!data) return;
-
     const currentIndex = Math.max(
       data.hourly.time.findIndex((value) => value >= data.current.time),
       0,
     );
-
     const rainChance = data.hourly.precipitation_probability[currentIndex] ?? 0;
-
     fetchAdvice({
       temperature: data.current.temperature_2m,
       weatherCode: data.current.weather_code,
@@ -98,6 +108,88 @@ export default function Index() {
       isDay: data.current.is_day,
     });
   }, [data, fetchAdvice]);
+
+  // Refresh banner animation — also resets peek when refresh kicks in
+  useEffect(() => {
+    if (refreshing) {
+      setIsPulling(false);
+      peekProgress.setValue(0);
+      setShowRefreshBanner(true);
+      Animated.spring(refreshBannerProgress, {
+        toValue: 1,
+        damping: 16,
+        mass: 0.8,
+        stiffness: 180,
+        useNativeDriver: true,
+      }).start();
+      return;
+    }
+
+    Animated.timing(refreshBannerProgress, {
+      toValue: 0,
+      duration: 220,
+      useNativeDriver: true,
+    }).start(({ finished }) => {
+      if (finished) setShowRefreshBanner(false);
+    });
+  }, [refreshBannerProgress, peekProgress, refreshing]);
+
+  // Track scroll position
+  const handleScroll = useCallback((e: any) => {
+    scrollYRef.current = e.nativeEvent.contentOffset.y;
+  }, []);
+
+  // Show peek card as soon as the user starts pulling from the top
+  const handleScrollBeginDrag = useCallback(() => {
+    if (scrollYRef.current <= 0) {
+      setIsPulling(true);
+      Animated.spring(peekProgress, {
+        toValue: 1,
+        damping: 20,
+        mass: 0.8,
+        stiffness: 180,
+        useNativeDriver: true,
+      }).start();
+    }
+  }, [peekProgress]);
+
+  // Hide peek card if the user lets go before triggering a refresh
+  const handleScrollEndDrag = useCallback(() => {
+    if (!refreshing) {
+      setIsPulling(false);
+      Animated.timing(peekProgress, {
+        toValue: 0,
+        duration: 200,
+        useNativeDriver: true,
+      }).start();
+    }
+  }, [refreshing, peekProgress]);
+
+  const handleRefresh = useCallback(async () => {
+    setRefreshing(true);
+    try {
+      if (selectedLocation) {
+        await refetchWeather();
+        return;
+      }
+      const nextCoordinates = await refetchLocation();
+      if (nextCoordinates) {
+        await refetchWeather(
+          nextCoordinates.latitude,
+          nextCoordinates.longitude,
+        );
+      }
+    } finally {
+      setRefreshing(false);
+    }
+  }, [refetchLocation, refetchWeather, selectedLocation]);
+
+  function handleLocationSelect(result: GeocodingResult) {
+    setSelectedLocation(result);
+    setSearchQuery(`${result.name}, ${result.country}`);
+    setShowSuggestions(false);
+  }
+
   const activeCity =
     selectedLocation?.name ??
     locationDetails?.city ??
@@ -105,20 +197,15 @@ export default function Index() {
     "Current location";
   const activeCountry =
     selectedLocation?.country ?? locationDetails?.country ?? "Live";
-
   const shouldShowResults =
     showSuggestions && searchQuery.trim().length >= 2 && results.length > 0;
 
   const hourlyForecast = useMemo(() => {
-    if (!data) {
-      return [];
-    }
-
+    if (!data) return [];
     const startIndex = Math.max(
       data.hourly.time.findIndex((value) => value >= data.current.time),
       0,
     );
-
     return data.hourly.time
       .slice(startIndex, startIndex + 24)
       .map((time, index) => ({
@@ -140,10 +227,7 @@ export default function Index() {
   }, [data]);
 
   const todayTemperatures = useMemo(() => {
-    if (!data) {
-      return { min: 0, max: 0 };
-    }
-
+    if (!data) return { min: 0, max: 0 };
     const upcomingTemps = data.hourly.temperature_2m.slice(0, 24);
     return {
       min: Math.round(Math.min(...upcomingTemps)),
@@ -160,15 +244,9 @@ export default function Index() {
   const hasWeather = Boolean(data);
   const isInitialLoading = locationLoading || weatherLoading;
 
-  function handleLocationSelect(result: GeocodingResult) {
-    setSelectedLocation(result);
-    setSearchQuery(`${result.name}, ${result.country}`);
-    setShowSuggestions(false);
-  }
-
   return (
     <View
-      className="flex-1 "
+      className="flex-1"
       style={{ paddingTop: insets.top, paddingBottom: insets.bottom }}
     >
       <WeatherBackground
@@ -180,8 +258,74 @@ export default function Index() {
           className="flex-1"
           contentContainerStyle={{ paddingHorizontal: 20, paddingBottom: 40 }}
           showsVerticalScrollIndicator={false}
+          onScroll={handleScroll}
+          scrollEventThrottle={16}
+          onScrollBeginDrag={handleScrollBeginDrag}
+          onScrollEndDrag={handleScrollEndDrag}
+          refreshControl={
+            <RefreshControl
+              refreshing={refreshing}
+              onRefresh={handleRefresh}
+              tintColor="transparent"
+              colors={["transparent"]}
+              progressBackgroundColor="transparent"
+              progressViewOffset={-300}
+            />
+          }
         >
           <View className="gap-6 pt-4">
+            {/* Pull-to-peek card (before trigger) + refresh banner (after trigger) */}
+            {isPulling || showRefreshBanner ? (
+              <Animated.View
+                style={{
+                  opacity: showRefreshBanner
+                    ? refreshBannerProgress
+                    : peekProgress.interpolate({
+                        inputRange: [0, 1],
+                        outputRange: [0, 0.65],
+                      }),
+                  transform: [
+                    {
+                      translateY: showRefreshBanner
+                        ? refreshBannerProgress.interpolate({
+                            inputRange: [0, 1],
+                            outputRange: [-18, 0],
+                          })
+                        : peekProgress.interpolate({
+                            inputRange: [0, 1],
+                            outputRange: [-30, 0],
+                          }),
+                    },
+                    {
+                      scale: showRefreshBanner
+                        ? refreshBannerProgress.interpolate({
+                            inputRange: [0, 1],
+                            outputRange: [0.96, 1],
+                          })
+                        : peekProgress.interpolate({
+                            inputRange: [0, 1],
+                            outputRange: [0.95, 1],
+                          }),
+                    },
+                  ],
+                }}
+              >
+                <WeatherLoadingCard
+                  variant="inline"
+                  title={
+                    showRefreshBanner
+                      ? "Refreshing forecast"
+                      : "Pull to refresh"
+                  }
+                  message={
+                    showRefreshBanner
+                      ? "Updating the sky, temperature, and local conditions."
+                      : "Release to get the latest forecast."
+                  }
+                />
+              </Animated.View>
+            ) : null}
+
             <View className="gap-4">
               <View className="flex-row items-center justify-between">
                 <View className="flex-row items-center gap-3">
@@ -385,18 +529,10 @@ export default function Index() {
             ) : null}
 
             {isInitialLoading && !hasWeather ? (
-              <BlurView
-                intensity={backgroundIsDay ? 20 : 30}
-                tint={backgroundIsDay ? "light" : "dark"}
-                className="overflow-hidden rounded-[28px] border border-white/20 bg-white/5"
-              >
-                <View className="flex-row items-center gap-3 px-5 py-6">
-                  <ActivityIndicator color="white" />
-                  <Text className="text-base text-white/80">
-                    Loading the latest weather...
-                  </Text>
-                </View>
-              </BlurView>
+              <WeatherLoadingCard
+                title="Loading the latest weather"
+                message="Pulling your location, current conditions, and a fresh forecast into view."
+              />
             ) : null}
 
             {locationError || weatherError || geocodingError ? (
@@ -431,7 +567,7 @@ export default function Index() {
         </ScrollView>
       </WeatherBackground>
       <ThemeTester
-        visible={__DEV__} /* Only show the testing button in development */
+        visible={__DEV__}
         onSelect={(code, isDay, time) => {
           setOverrideWeatherCode(code);
           setOverrideIsDay(isDay);
