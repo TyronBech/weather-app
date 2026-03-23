@@ -23,20 +23,20 @@ export function useWeatherAdvice() {
       setLoading(true);
       setError(null);
 
-      const baseUrl = process.env.EXPO_PUBLIC_GROQ_API_BASE_URL;
-      const apiKey = process.env.EXPO_PUBLIC_GROQ_API_KEY;
-      const model = process.env.EXPO_PUBLIC_GROQ_MODEL;
+      const baseUrl = process.env.EXPO_PUBLIC_OPEN_ROUTER_API_BASE_URL;
+      const apiKey = process.env.EXPO_PUBLIC_OPEN_ROUTER_API_KEY;
+      const model = process.env.EXPO_PUBLIC_OPEN_ROUTER_API_MODEL_ID;
 
       if (!baseUrl || !apiKey || !model) {
         setError(
-          "GROQ API is not configured correctly. Please set EXPO_PUBLIC_GROQ_API_BASE_URL, EXPO_PUBLIC_GROQ_API_KEY, and EXPO_PUBLIC_GROQ_MODEL.",
+          "OPEN_ROUTER API is not configured correctly. Please set EXPO_PUBLIC_OPEN_ROUTER_API_BASE_URL, EXPO_PUBLIC_OPEN_ROUTER_API_KEY, and EXPO_PUBLIC_OPEN_ROUTER_API_MODEL_ID.",
         );
         setLoading(false);
         return;
       }
 
       try {
-        // Call the GROQ API to get weather advice based on current conditions
+        // Call the OPEN_ROUTER API to get weather advice based on current conditions
         const response = await fetch(baseUrl, {
           method: "POST",
           headers: {
@@ -49,7 +49,7 @@ export function useWeatherAdvice() {
             messages: [
               {
                 role: "system",
-                content: `You give 1-2 sentences only of advice that is funny, slightly over-the-top, but genuinely useful. `,
+                content: `You give 1-2 sentences only of advice that is humorous but genuinely useful.`,
               },
               {
                 role: "user",
@@ -59,7 +59,7 @@ export function useWeatherAdvice() {
                             - Wind speed: ${weatherData.windSpeed} km/h
                             - Humidity: ${weatherData.humidity}%
                             - Time of day: ${weatherData.isDay === 1 ? "Daytime" : "Nighttime"}
-                            Give me your best weather advice for going outside right now.`,
+                            Give me your best weather advice for going outside or should I stay inside right now.`,
               },
             ],
           }),

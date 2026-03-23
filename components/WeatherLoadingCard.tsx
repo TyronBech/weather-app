@@ -187,7 +187,7 @@ export default function WeatherLoadingCard({
             {(steps ?? defaultSteps).map((step, index) => (
               <Animated.View
                 key={step}
-                className="rounded-full border border-white/10 bg-white/8 px-3 py-2"
+                className="rounded-full border border-white/10 bg-white/10 px-3 py-2"
                 style={{
                   opacity: pulse.interpolate({
                     inputRange: [0, 1],
