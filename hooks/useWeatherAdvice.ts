@@ -49,7 +49,7 @@ export function useWeatherAdvice() {
             messages: [
               {
                 role: "system",
-                content: `You give 1-2 sentences only of advice that has humor but genuinely useful. `,
+                content: `You give 1-2 sentences only of advice that is humorous but genuinely useful.`,
               },
               {
                 role: "user",
