@@ -42,21 +42,28 @@ export function useLocation() {
       const { latitude, longitude } = loc.coords;
       setCoordinates({ latitude, longitude });
 
-      const [place] = await Location.reverseGeocodeAsync({
-        latitude,
-        longitude,
-      });
-      if (!isMountedRef.current || requestId !== requestIdRef.current) return;
+      // Return coordinates immediately so callers (e.g. pull-to-refresh) can
+      // re-fetch weather data without waiting for reverse geocoding to finish.
+      const result = { latitude, longitude };
 
-      if (place) {
-        setLocationDetails({
-          city: place.city ?? place.district ?? place.subregion ?? undefined,
-          region: place.region ?? undefined,
-          country: place.country ?? undefined,
+      // Reverse geocoding is best-effort — failure does not prevent a refresh.
+      try {
+        const [place] = await Location.reverseGeocodeAsync({
+          latitude,
+          longitude,
         });
+        if (isMountedRef.current && requestId === requestIdRef.current && place) {
+          setLocationDetails({
+            city: place.city ?? place.district ?? place.subregion ?? undefined,
+            region: place.region ?? undefined,
+            country: place.country ?? undefined,
+          });
+        }
+      } catch {
+        // Ignore reverse geocoding errors; coordinates are still valid.
       }
 
-      return { latitude, longitude };
+      return result;
     } catch (err) {
       if (isMountedRef.current && requestId === requestIdRef.current) {
         setError(err instanceof Error ? err.message : String(err));
