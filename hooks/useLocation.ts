@@ -52,11 +52,7 @@ export function useLocation() {
           latitude,
           longitude,
         });
-        if (
-          isMountedRef.current &&
-          requestId === requestIdRef.current &&
-          place
-        ) {
+        if (isMountedRef.current && requestId === requestIdRef.current && place) {
           setLocationDetails({
             city: place.city ?? place.district ?? place.subregion ?? undefined,
             region: place.region ?? undefined,
