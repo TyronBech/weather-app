@@ -134,24 +134,41 @@ export default function Index() {
     });
   }, [refreshBannerProgress, peekProgress, refreshing]);
 
-  // Track scroll position
-  const handleScroll = useCallback((e: any) => {
-    scrollYRef.current = e.nativeEvent.contentOffset.y;
-  }, []);
+  // Track scroll position and control peek card based on actual overscroll
+  const handleScroll = useCallback(
+    (e: any) => {
+      const offsetY = e.nativeEvent.contentOffset.y;
+      scrollYRef.current = offsetY;
 
-  // Show peek card as soon as the user starts pulling from the top
+      // Only show peek card when the user is actually overscrolling past the top
+      if (offsetY < 0 && !refreshing) {
+        if (!isPulling) {
+          setIsPulling(true);
+          Animated.spring(peekProgress, {
+            toValue: 1,
+            damping: 20,
+            mass: 0.8,
+            stiffness: 180,
+            useNativeDriver: true,
+          }).start();
+        }
+      } else if (offsetY >= 0 && isPulling && !refreshing) {
+        // Hide peek card when the user scrolls back into normal range
+        setIsPulling(false);
+        Animated.timing(peekProgress, {
+          toValue: 0,
+          duration: 200,
+          useNativeDriver: true,
+        }).start();
+      }
+    },
+    [isPulling, refreshing, peekProgress],
+  );
+
+  // Peek card visibility is now controlled by overscroll in handleScroll
   const handleScrollBeginDrag = useCallback(() => {
-    if (scrollYRef.current <= 0) {
-      setIsPulling(true);
-      Animated.spring(peekProgress, {
-        toValue: 1,
-        damping: 20,
-        mass: 0.8,
-        stiffness: 180,
-        useNativeDriver: true,
-      }).start();
-    }
-  }, [peekProgress]);
+    // Intentionally left blank: peek is triggered on actual overscroll only.
+  }, []);
 
   // Hide peek card if the user lets go before triggering a refresh
   const handleScrollEndDrag = useCallback(() => {
